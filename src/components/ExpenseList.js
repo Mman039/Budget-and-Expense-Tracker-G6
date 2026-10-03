@@ -11,7 +11,7 @@ export function ExpenseList({ expenses, onDelete }) {
       <View style={styles.expenseList}>
         {expenses.length === 0 ? (<View style={styles.emptyState}>
             <Text style={styles.emptyTitle}>Nothing logged yet</Text>
-            <Text style={styles.emptyText}>Your next expense will appear here.</Text>
+            <Text style={styles.emptyText}>Your next expense will appear here.</Text> //this is what is shown if the user has not logged any expenses yet.
           </View>) : (expenses.map((expense) => (<View style={styles.expenseRow} key={expense.id}>
               <View style={styles.expenseIcon}><Text style={styles.expenseIconText}>₱</Text></View>
               <View style={styles.expenseDetails}>
@@ -21,7 +21,7 @@ export function ExpenseList({ expenses, onDelete }) {
               <Text style={styles.expenseAmount}>{formatAmount(expense.amount)}</Text>
               <Pressable onPress={() => onDelete(expense.id)} style={styles.deleteButton} accessibilityLabel={`Delete ₱{expense.name}`} accessibilityRole="button">
                 <Text style={styles.deleteButtonText}>x</Text>
-              </Pressable>
+              </Pressable> 
             </View>)))}
       </View>
     </>);
