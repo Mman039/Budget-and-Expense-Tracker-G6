@@ -12,12 +12,12 @@ export function ExpenseList({ expenses, onDelete }) {
         {expenses.length === 0 ? (<View style={styles.emptyState}>
             <Text style={styles.emptyTitle}>Nothing logged yet</Text>
             <Text style={styles.emptyText}>Your next expense will appear here.</Text> //this is what is shown if the user has not logged any expenses yet.
-          </View>) : (expenses.map((expense) => (<View style={styles.expenseRow} key={expense.id}>//key={expense.id} is used to uniquely identify each expense in the list for efficient redendering.
+          </View>) : (expenses.map((expense) => (<View style={styles.expenseRow} key={expense.id}> //key={expense.id} is used to uniquely identify each expense in the list for efficient redendering.
               <View style={styles.expenseIcon}><Text style={styles.expenseIconText}>₱</Text></View>
               <View style={styles.expenseDetails}>
                 <Text style={styles.expenseName}>{expense.name}</Text>
                 <Text style={styles.expenseDate}>{expense.date}</Text>
-              </View>
+              </View> 
               <Text style={styles.expenseAmount}>{formatAmount(expense.amount)}</Text>
               <Pressable onPress={() => onDelete(expense.id)} style={styles.deleteButton} accessibilityLabel={`Delete ₱{expense.name}`} accessibilityRole="button">
                 <Text style={styles.deleteButtonText}>x</Text>

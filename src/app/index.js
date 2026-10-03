@@ -24,9 +24,9 @@ const money = (amount) => `₱${amount.toFixed(2)}`;
 
 // These quick-add values are normal state so the user can change the label or amount.
 const defaultQuickAdds = [
-    { id: "coffee", label: "Coffee", amount: "4" },
-    { id: "lunch", label: "Lunch", amount: "12" },
-    { id: "bus", label: "Bus fare", amount: "8" },
+    { id: "coffee", label: "Coffee", amount: "7" },
+    { id: "lunch", label: "Lunch", amount: "40" },
+    { id: "ride2school", label: "Tricycle Fare", amount: "15" },
 ];
 
 // Finds a category by id and falls back to Other when an unknown id is received.
