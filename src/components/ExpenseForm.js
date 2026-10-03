@@ -1,5 +1,5 @@
 import { Pressable, Text, TextInput, View } from "react-native";
-import { expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";
+import { expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles"; //using expenseTrackerStyles as just "styles" for easier use
 // Collects the name and amount needed to create a new expense.
 export function ExpenseForm({ name, amount, setName, setAmount, onSubmit }) {
     return (<>
