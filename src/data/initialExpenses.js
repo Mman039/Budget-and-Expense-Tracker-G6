@@ -13,3 +13,4 @@ export const initialExpenses = [
     { id: "11", amount: 9.5, description: "Coffee catch-up", category: "food", date: "2026-09-12" },
     { id: "12", amount: 28, description: "Course workbook", category: "school", date: "2026-09-10" },
 ];
+// these are just sample records to make the app seem functional on first launch.
