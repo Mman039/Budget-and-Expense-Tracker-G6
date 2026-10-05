@@ -10,21 +10,31 @@ import {
 import { formatAmount } from "../utils/currency";
 import { formatExpenseDate } from "../utils/dates";
 
-// Renders expense rows with an optional section heading and delete actions.
 export function ExpenseList({
   expenses,
   onDelete,
   title = "Recent expenses",
   action,
+  onAction,
   today,
   emptyTitle = "Nothing logged yet",
   emptyMessage = "Your next expense will appear here.",
 }) {
+  const actionContent =
+    action &&
+    (onAction ? (
+      <Pressable onPress={onAction} accessibilityRole="button">
+        <Text style={styles.sectionAction}>{action}</Text>
+      </Pressable>
+    ) : (
+      <Text style={styles.sectionAction}>{action}</Text>
+    ));
+
   return (
     <>
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>{title}</Text>
-        {action && <Text style={styles.sectionAction}>{action}</Text>}
+        {actionContent}
       </View>
       <View style={styles.card}>
         {expenses.length === 0 ? (
@@ -39,10 +49,7 @@ export function ExpenseList({
             const isLastRow = index === expenses.length - 1;
 
             return (
-              <View
-                key={expense.id}
-                style={getTransactionRowStyle(isLastRow)}
-              >
+              <View key={expense.id} style={getTransactionRowStyle(isLastRow)}>
                 <View style={getTransactionIconStyle(category)}>
                   <Ionicons
                     name={category.icon}
