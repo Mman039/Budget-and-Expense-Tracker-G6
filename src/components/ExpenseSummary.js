@@ -1,59 +1,23 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
-import { expenseTrackerStyles } from "../styles/expenseTrackerStyles";
+import {
+  colors,
+  expenseTrackerStyles as styles,
+} from "../styles/expenseTrackerStyles";
 import { formatAmount } from "../utils/currency";
 
 // Displays a spending total and the number of expenses it represents.
-export function ExpenseSummary({
-  total,
-  expenseCount,
-  caption = `${expenseCount} expenses recorded this month`,
-  componentStyles = expenseTrackerStyles,
-}) {
-  const isDashboardSummary = Boolean(componentStyles.heroCard);
-
+export function ExpenseSummary({ total, caption }) {
   return (
-    <View
-      style={
-        isDashboardSummary
-          ? componentStyles.heroCard
-          : componentStyles.totalCard
-      }
-    >
+    <View style={styles.heroCard}>
       <View>
-        <Text
-          style={
-            isDashboardSummary
-              ? componentStyles.heroLabel
-              : componentStyles.totalLabel
-          }
-        >
-          {isDashboardSummary ? "TOTAL THIS MONTH" : "TOTAL SPENT"}
-        </Text>
-        <Text
-          style={
-            isDashboardSummary
-              ? componentStyles.heroAmount
-              : componentStyles.totalAmount
-          }
-        >
-          {formatAmount(total)}
-        </Text>
-        <Text
-          style={
-            isDashboardSummary
-              ? componentStyles.heroCaption
-              : componentStyles.totalCaption
-          }
-        >
-          {caption}
-        </Text>
+        <Text style={styles.heroLabel}>TOTAL THIS MONTH</Text>
+        <Text style={styles.heroAmount}>{formatAmount(total)}</Text>
+        <Text style={styles.heroCaption}>{caption}</Text>
       </View>
-      {isDashboardSummary && (
-        <View style={componentStyles.heroMark}>
-          <Ionicons name="trending-up" size={26} color="#A7F3D0" />
-        </View>
-      )}
+      <View style={styles.heroMark}>
+        <Ionicons name="trending-up" size={26} color={colors.mint} />
+      </View>
     </View>
   );
 }
