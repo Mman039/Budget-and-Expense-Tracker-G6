@@ -38,9 +38,18 @@ export const expenseTrackerExtraStyles = StyleSheet.create({
   warningMessage: { color: "#7A5C20", fontSize: 12, lineHeight: 18 },
   quickInput: {
     color: colors.ink,
+    flex: 1,
     fontSize: 12,
     fontWeight: "700",
     padding: 0,
+  },
+  quickHeader: { alignItems: "center", flexDirection: "row" },
+  quickRemoveButton: {
+    alignItems: "center",
+    height: 24,
+    justifyContent: "center",
+    marginLeft: 4,
+    width: 24,
   },
   quickEditRow: { alignItems: "center", flexDirection: "row", marginTop: 7 },
   currencySmall: { color: colors.green, fontSize: 12, fontWeight: "800" },
@@ -58,6 +67,16 @@ export const expenseTrackerExtraStyles = StyleSheet.create({
     paddingVertical: 5,
   },
   quickUseText: { color: colors.white, fontSize: 10, fontWeight: "800" },
+  addQuickButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    gap: 6,
+    marginTop: -12,
+    marginBottom: 18,
+    paddingVertical: 6,
+  },
+  addQuickButtonText: { color: colors.blue, fontSize: 13, fontWeight: "700" },
 });
 
 // Shared visual styles for app screens and expense components.
@@ -312,13 +331,19 @@ export const expenseTrackerStyles = StyleSheet.create({
     fontWeight: "700",
     marginTop: 6,
   },
-  quickRow: { flexDirection: "row", gap: 9, marginBottom: 23 },
+  quickRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 9,
+    marginBottom: 23,
+  },
   quickButton: {
     backgroundColor: colors.white,
     borderColor: colors.border,
     borderRadius: 14,
     borderWidth: 1,
-    flex: 1,
+    flexBasis: "47%",
+    flexGrow: 1,
     padding: 12,
   },
   primaryButton: {

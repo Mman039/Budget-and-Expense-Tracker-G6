@@ -38,6 +38,7 @@ const tabs = [
   { id: "stats", label: "Stats", icon: "bar-chart-outline" },
 ];
 const today = "2026-09-24";
+const maxQuickAdds = 4;
 
 // These quick-add values are normal state so the user can change the label or amount.
 const defaultQuickAdds = [
@@ -192,6 +193,26 @@ export default function Index() {
       ),
     );
   };
+  // Adds a blank editable shortcut only while the four-item limit has room.
+  const addQuickAdd = () => {
+    setQuickAdds((currentQuickAdds) => {
+      if (currentQuickAdds.length >= maxQuickAdds) return currentQuickAdds;
+      return [
+        ...currentQuickAdds,
+        {
+          id: `quick-add-${Date.now()}`,
+          label: "",
+          amount: "",
+        },
+      ];
+    });
+  };
+  // Removes a shortcut so users can replace their choices.
+  const removeQuickAdd = (id) => {
+    setQuickAdds((currentQuickAdds) =>
+      currentQuickAdds.filter((quickAdd) => quickAdd.id !== id),
+    );
+  };
   // Saves both budget fields and reminds the user if the current spending is already too high.
   const saveBudgets = () => {
     const nextWeeklyBudget = Number(weeklyBudget) || 0;
@@ -239,6 +260,8 @@ export default function Index() {
               quickAdds={quickAdds}
               onQuickAdd={quickAdd}
               onEditQuickAdd={updateQuickAdd}
+              onAddQuickAdd={addQuickAdd}
+              onRemoveQuickAdd={removeQuickAdd}
               onSubmit={addExpense}
             />
           )}
@@ -435,6 +458,8 @@ function AddExpense({
   quickAdds,
   onQuickAdd,
   onEditQuickAdd,
+  onAddQuickAdd,
+  onRemoveQuickAdd,
   onSubmit,
 }) {
   return (
@@ -468,19 +493,33 @@ function AddExpense({
           </Pressable>
         ))}
       </View>
-      <SectionTitle title="Quick add" />
+      <SectionTitle
+        title="Quick add"
+        action={`${quickAdds.length}/${maxQuickAdds}`}
+      />
       <View style={styles.quickRow}>
         {quickAdds.map((quickAdd) => (
           <View key={quickAdd.id} style={styles.quickButton}>
-            <TextInput
-              value={quickAdd.label}
-              onChangeText={(value) =>
-                onEditQuickAdd(quickAdd.id, "label", value)
-              }
-              style={extraStyles.quickInput}
-              placeholder="Label"
-              placeholderTextColor={colors.muted}
-            />
+            <View style={extraStyles.quickHeader}>
+              <TextInput
+                value={quickAdd.label}
+                onChangeText={(value) =>
+                  onEditQuickAdd(quickAdd.id, "label", value)
+                }
+                style={extraStyles.quickInput}
+                placeholder="Label"
+                placeholderTextColor={colors.muted}
+                accessibilityLabel="Quick add label"
+              />
+              <Pressable
+                onPress={() => onRemoveQuickAdd(quickAdd.id)}
+                style={extraStyles.quickRemoveButton}
+                accessibilityLabel={`Remove ${quickAdd.label || "quick add"}`}
+                accessibilityRole="button"
+              >
+                <Ionicons name="close" size={16} color={colors.muted} />
+              </Pressable>
+            </View>
             <View style={extraStyles.quickEditRow}>
               <Text style={extraStyles.currencySmall}>₱</Text>
               <TextInput
@@ -490,6 +529,9 @@ function AddExpense({
                 }
                 keyboardType="decimal-pad"
                 style={extraStyles.quickAmountInput}
+                placeholder="0.00"
+                placeholderTextColor={colors.muted}
+                accessibilityLabel="Quick add amount"
               />
               <Pressable
                 style={extraStyles.quickUseButton}
@@ -503,6 +545,16 @@ function AddExpense({
           </View>
         ))}
       </View>
+      {quickAdds.length < maxQuickAdds && (
+        <Pressable
+          style={extraStyles.addQuickButton}
+          onPress={onAddQuickAdd}
+          accessibilityRole="button"
+        >
+          <Ionicons name="add-circle-outline" size={18} color={colors.blue} />
+          <Text style={extraStyles.addQuickButtonText}>Add quick add</Text>
+        </Pressable>
+      )}
       <Pressable style={styles.primaryButton} onPress={onSubmit}>
         <Ionicons
           name="checkmark-circle-outline"
