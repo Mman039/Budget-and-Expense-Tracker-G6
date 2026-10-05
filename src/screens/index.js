@@ -1,6 +1,8 @@
-//index.js contains the app’s Home, Add, History, Budget, and Stats screens and their behavior.
+// Contains the Home, Add, History, Budget, and Stats screens and their behavior.
 
 import { Ionicons } from "@expo/vector-icons";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useState } from "react";
 import {
   Alert,
@@ -19,7 +21,6 @@ import { initialExpenses } from "../data/initialExpenses";
 import {
   colors,
   expenseTrackerExtraStyles as extraStyles,
-  expenseTrackerStyles as styles,
   getBreakdownFillStyle,
   getBudgetWarningStyle,
   getCategoryButtonStyle,
@@ -28,17 +29,19 @@ import {
   getProgressFillStyle,
   getSummaryDotStyle,
   getTabLabelStyle,
+  expenseTrackerStyles as styles,
 } from "../styles/expenseTrackerStyles";
 import { formatAmount as money } from "../utils/currency";
 const tabs = [
-  { id: "dashboard", label: "Home", icon: "home-outline" },
-  { id: "add", label: "Add", icon: "add-circle-outline" },
-  { id: "history", label: "History", icon: "list-outline" },
-  { id: "budget", label: "Budget", icon: "wallet-outline" },
-  { id: "stats", label: "Stats", icon: "bar-chart-outline" },
+  { id: "Home", label: "Home", icon: "home-outline" },
+  { id: "Add", label: "Add", icon: "add-circle-outline" },
+  { id: "History", label: "History", icon: "list-outline" },
+  { id: "Budget", label: "Budget", icon: "wallet-outline" },
+  { id: "Stats", label: "Stats", icon: "bar-chart-outline" },
 ];
 const today = "2026-09-24";
-const maxQuickAdds = 4;
+const maxQuickAdds = 6;
+const Stack = createNativeStackNavigator();
 
 // These quick-add values are normal state so the user can change the label or amount.
 const defaultQuickAdds = [
@@ -77,9 +80,7 @@ function BudgetWarning({
       `Only ${money(Math.max(monthlyBudget - monthlySpent, 0))} left this month.`,
     );
   return (
-    <View
-      style={getBudgetWarningStyle(weeklyOver || monthlyOver)}
-    >
+    <View style={getBudgetWarningStyle(weeklyOver || monthlyOver)}>
       <Ionicons
         name={
           weeklyOver || monthlyOver
@@ -107,7 +108,6 @@ function BudgetWarning({
 export default function Index() {
   // Step 1: Keep all prototype data in useState. Nothing is saved to a database or device storage.
   const [expenses, setExpenses] = useState(initialExpenses);
-  const [currentScreen, setCurrentScreen] = useState("dashboard");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("food");
@@ -147,7 +147,7 @@ export default function Index() {
         "Missing details",
         "Add a description and an amount greater than zero.",
       );
-      return;
+      return false;
     }
     // Warn before saving when this new expense will cross either budget limit.
     const nextWeekTotal = weekTotal + parsedAmount;
@@ -173,7 +173,7 @@ export default function Index() {
     ]);
     setDescription("");
     setAmount("");
-    setCurrentScreen("dashboard");
+    return true;
   };
   // Step 4: filter creates a new array, so the original state is never mutated directly.
   const deleteExpense = (id) =>
@@ -232,80 +232,117 @@ export default function Index() {
     }
   };
   return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen name="Home">
+          {({ navigation }) => (
+            <ScreenFrame navigation={navigation} activeScreen="Home">
+              <Dashboard
+                expenses={expenses}
+                todayTotal={todayTotal}
+                weekTotal={weekTotal}
+                monthTotal={monthTotal}
+                savedWeeklyBudget={savedWeeklyBudget}
+                savedMonthlyBudget={savedMonthlyBudget}
+                onAdd={() => navigation.navigate("Add")}
+                onHistory={() => navigation.navigate("History")}
+                onStats={() => navigation.navigate("Stats")}
+              />
+            </ScreenFrame>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Add">
+          {({ navigation }) => (
+            <ScreenFrame navigation={navigation} activeScreen="Add">
+              <AddExpense
+                description={description}
+                amount={amount}
+                selectedCategory={selectedCategory}
+                setDescription={setDescription}
+                setAmount={setAmount}
+                setSelectedCategory={setSelectedCategory}
+                quickAdds={quickAdds}
+                onQuickAdd={quickAdd}
+                onEditQuickAdd={updateQuickAdd}
+                onAddQuickAdd={addQuickAdd}
+                onRemoveQuickAdd={removeQuickAdd}
+                onSubmit={() => {
+                  if (addExpense()) navigation.navigate("Home");
+                }}
+              />
+            </ScreenFrame>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="History">
+          {({ navigation }) => (
+            <ScreenFrame navigation={navigation} activeScreen="History">
+              <History
+                expenses={expenses}
+                searchText={searchText}
+                setSearchText={setSearchText}
+                onDelete={deleteExpense}
+              />
+            </ScreenFrame>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Budget">
+          {({ navigation }) => (
+            <ScreenFrame navigation={navigation} activeScreen="Budget">
+              <Budget
+                weeklyBudget={weeklyBudget}
+                monthlyBudget={monthlyBudget}
+                setWeeklyBudget={setWeeklyBudget}
+                setMonthlyBudget={setMonthlyBudget}
+                savedWeeklyBudget={savedWeeklyBudget}
+                savedMonthlyBudget={savedMonthlyBudget}
+                weekTotal={weekTotal}
+                monthTotal={monthTotal}
+                onSave={saveBudgets}
+              />
+            </ScreenFrame>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Stats">
+          {({ navigation }) => (
+            <ScreenFrame navigation={navigation} activeScreen="Stats">
+              <Stats expenses={expenses} monthTotal={monthTotal} />
+            </ScreenFrame>
+          )}
+        </Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+// Shares the scrolling layout and navigation bar across all stack screens.
+function ScreenFrame({ children, navigation, activeScreen }) {
+  return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.appShell}>
         <ScrollView
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          {currentScreen === "dashboard" && (
-            <Dashboard
-              expenses={expenses}
-              todayTotal={todayTotal}
-              weekTotal={weekTotal}
-              monthTotal={monthTotal}
-              savedWeeklyBudget={savedWeeklyBudget}
-              savedMonthlyBudget={savedMonthlyBudget}
-              onAdd={() => setCurrentScreen("add")}
-            />
-          )}
-          {currentScreen === "add" && (
-            <AddExpense
-              description={description}
-              amount={amount}
-              selectedCategory={selectedCategory}
-              setDescription={setDescription}
-              setAmount={setAmount}
-              setSelectedCategory={setSelectedCategory}
-              quickAdds={quickAdds}
-              onQuickAdd={quickAdd}
-              onEditQuickAdd={updateQuickAdd}
-              onAddQuickAdd={addQuickAdd}
-              onRemoveQuickAdd={removeQuickAdd}
-              onSubmit={addExpense}
-            />
-          )}
-          {currentScreen === "history" && (
-            <History
-              expenses={expenses}
-              searchText={searchText}
-              setSearchText={setSearchText}
-              onDelete={deleteExpense}
-            />
-          )}
-          {currentScreen === "budget" && (
-            <Budget
-              weeklyBudget={weeklyBudget}
-              monthlyBudget={monthlyBudget}
-              setWeeklyBudget={setWeeklyBudget}
-              setMonthlyBudget={setMonthlyBudget}
-              savedWeeklyBudget={savedWeeklyBudget}
-              savedMonthlyBudget={savedMonthlyBudget}
-              weekTotal={weekTotal}
-              monthTotal={monthTotal}
-              onSave={saveBudgets}
-            />
-          )}
-          {currentScreen === "stats" && (
-            <Stats expenses={expenses} monthTotal={monthTotal} />
-          )}
+          {children}
         </ScrollView>
         <View style={styles.tabBar}>
           {tabs.map((tab) => (
             <Pressable
               key={tab.id}
               style={styles.tabButton}
-              onPress={() => setCurrentScreen(tab.id)}
+              onPress={() => navigation.navigate(tab.id)}
               accessibilityRole="button"
+              accessibilityState={{ selected: activeScreen === tab.id }}
             >
               <Ionicons
                 name={tab.icon}
                 size={22}
-                color={currentScreen === tab.id ? colors.navy : colors.muted}
+                color={activeScreen === tab.id ? colors.navy : colors.muted}
               />
-              <Text
-                style={getTabLabelStyle(currentScreen === tab.id)}
-              >
+              <Text style={getTabLabelStyle(activeScreen === tab.id)}>
                 {tab.label}
               </Text>
             </Pressable>
@@ -328,11 +365,18 @@ function Header({ eyebrow, title, action }) {
   );
 }
 // Displays a section heading and an optional small action label.
-function SectionTitle({ title, action }) {
+function SectionTitle({ title, action, onAction }) {
   return (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
-      {action && <Text style={styles.sectionAction}>{action}</Text>}
+      {action &&
+        (onAction ? (
+          <Pressable onPress={onAction} accessibilityRole="button">
+            <Text style={styles.sectionAction}>{action}</Text>
+          </Pressable>
+        ) : (
+          <Text style={styles.sectionAction}>{action}</Text>
+        ))}
     </View>
   );
 }
@@ -372,6 +416,8 @@ function Dashboard({
   savedWeeklyBudget,
   savedMonthlyBudget,
   onAdd,
+  onHistory,
+  onStats,
 }) {
   const chartDays = ["18", "19", "20", "21", "22", "23", "24"];
   const chartTotals = chartDays.map((day) =>
@@ -423,7 +469,11 @@ function Dashboard({
           budget={savedMonthlyBudget}
         />
       </View>
-      <SectionTitle title="Last 7 days" action="View stats" />
+      <SectionTitle
+        title="Last 7 days"
+        action="View stats"
+        onAction={onStats}
+      />
       <View style={styles.card}>
         <View style={styles.chart}>
           {chartTotals.map((total, index) => (
@@ -442,6 +492,7 @@ function Dashboard({
         expenses={expenses.slice(0, 5)}
         title="Recent transactions"
         action="See all"
+        onAction={onHistory}
         today={today}
       />
     </>
