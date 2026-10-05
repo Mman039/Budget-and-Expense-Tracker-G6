@@ -1,10 +1,14 @@
+// Progress bar that shows how close the user is to a spending limit.
 import { Text, View } from "react-native";
 import {
-  expenseTrackerStyles as styles,
   getProgressFillStyle,
+  expenseTrackerStyles as styles,
 } from "../styles/expenseTrackerStyles";
 import { formatAmount as money } from "../utils/currency";
 
+/**
+ * Renders a horizontal bar whose width reflects the percentage of the budget used.
+ */
 export function BudgetProgress({ label, spent, budget }) {
   const progress = budget > 0 ? Math.min(spent / budget, 1) : 0;
 

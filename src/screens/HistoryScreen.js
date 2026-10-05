@@ -1,3 +1,4 @@
+// This screen handles browsing and filtering the expense log.
 import { Ionicons } from "@expo/vector-icons";
 import { TextInput, View } from "react-native";
 import { ExpenseList } from "../components/ExpenseList";
@@ -5,6 +6,10 @@ import { Header } from "../components/Header";
 import { getCategory } from "../data/categories";
 import { colors, expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";
 
+/**
+ * Filters the transactions list by description or category name.
+ * The comparison is case-insensitive so the search feels natural.
+ */
 export function HistoryScreen({ expenses, today, searchText, setSearchText, onDelete }) {
   const filteredExpenses = expenses.filter(
     (expense) =>

@@ -1,3 +1,4 @@
+// This screen summarises the spending pattern in a more analytical way.
 import { Text, View } from "react-native";
 import { Header } from "../components/Header";
 import { SectionTitle } from "../components/SectionTitle";
@@ -6,6 +7,10 @@ import { categories } from "../data/categories";
 import { colors, expenseTrackerStyles as styles, getBreakdownFillStyle } from "../styles/expenseTrackerStyles";
 import { formatAmount as money } from "../utils/currency";
 
+/**
+ * Shows high-level insights such as the daily average and the biggest spending category.
+ * It uses the current expense list instead of any external database.
+ */
 export function StatsScreen({ expenses, monthTotal }) {
   const highest = expenses.reduce(
     (max, expense) => Math.max(max, expense.amount),

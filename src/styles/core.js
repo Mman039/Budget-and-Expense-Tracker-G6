@@ -1,3 +1,5 @@
+// Core visual styles for the app's screens and reusable components.
+// This file holds the main design system: cards, lists, buttons, inputs, and layout blocks.
 import { StyleSheet } from "react-native";
 
 import { colors } from "./tokens";

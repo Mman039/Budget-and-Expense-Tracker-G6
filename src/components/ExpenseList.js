@@ -1,3 +1,4 @@
+// Shared list used for recent expenses and search results.
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 import { getCategory } from "../data/categories";
@@ -10,6 +11,10 @@ import {
 import { formatAmount } from "../utils/currency";
 import { formatExpenseDate } from "../utils/dates";
 
+/**
+ * Lists expense rows in a reusable card layout.
+ * It can optionally show a delete button and an action label such as "See all".
+ */
 export function ExpenseList({
   expenses,
   onDelete,

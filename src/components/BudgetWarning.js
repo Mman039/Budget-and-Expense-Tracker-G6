@@ -1,3 +1,4 @@
+// Shows a reminder when the user gets close to or passes a budget limit.
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 import {
@@ -7,6 +8,9 @@ import {
 } from "../styles/expenseTrackerStyles";
 import { formatAmount as money } from "../utils/currency";
 
+/**
+ * Displays a caution banner when weekly or monthly spending is near or above budget.</n>
+ */
 export function BudgetWarning({
   weeklySpent,
   monthlySpent,

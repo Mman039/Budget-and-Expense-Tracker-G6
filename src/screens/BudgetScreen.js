@@ -1,3 +1,4 @@
+// This screen lets the user set and review spending limits.
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { BudgetProgress } from "../components/BudgetProgress";
@@ -7,6 +8,10 @@ import { SectionTitle } from "../components/SectionTitle";
 import { colors, expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";
 import { formatAmount as money } from "../utils/currency";
 
+/**
+ * Displays editable weekly and monthly maximum values.
+ * The UI does not save to disk yet, but it does update the in-memory warnings.
+ */
 export function BudgetScreen({
   weeklyBudget,
   monthlyBudget,

@@ -1,3 +1,5 @@
+// This component wraps the app's screens with a shared layout.
+// It adds the safe area, scrollable content area, and bottom navigation tabs.
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 import {
@@ -6,6 +8,7 @@ import {
   getTabLabelStyle,
 } from "../styles/expenseTrackerStyles";
 
+// These tab definitions control the bottom navigation for the prototype app.
 const tabs = [
   { id: "Home", label: "Home", icon: "home-outline" },
   { id: "Add", label: "Add", icon: "add-circle-outline" },
@@ -14,6 +17,10 @@ const tabs = [
   { id: "Stats", label: "Stats", icon: "bar-chart-outline" },
 ];
 
+/**
+ * Wraps a screen with the shared layout shell.
+ * It keeps each page visually consistent and makes navigation available from the bottom tab bar.
+ */
 export function ScreenFrame({ children, navigation, activeScreen }) {
   return (
     <SafeAreaView style={styles.safeArea}>

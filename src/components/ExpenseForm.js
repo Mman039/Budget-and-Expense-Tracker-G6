@@ -1,7 +1,11 @@
+// Field set for entering a new expense amount and description.
 import { Text, TextInput, View } from "react-native";
 import { expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";
 
-// Collects the description and amount needed to create a new expense.
+/**
+ * Collects the amount and description required to create a new expense.
+ * The parent screen controls the data and handles submission logic.
+ */
 export function ExpenseForm({
   description,
   amount,

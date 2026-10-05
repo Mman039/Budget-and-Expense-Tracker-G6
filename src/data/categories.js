@@ -1,4 +1,5 @@
-// Keeping categories in one place makes icons and colors consistent everywhere.
+// This file keeps every spending category in one place.
+// Putting the names, icons, and colors together makes the code easier to reuse and keep consistent.
 export const categories = [
   { id: "food", name: "Food", icon: "fast-food-outline", color: "#F59E0B" },
   {
@@ -23,7 +24,10 @@ export const categories = [
   },
 ];
 
-// Finds a category by id and falls back to Other for unknown ids.
+/**
+ * Looks up a category by id.
+ * If a value is missing or unknown, it falls back to the "Other" category.
+ */
 export function getCategory(categoryId) {
   return (
     categories.find((category) => category.id === categoryId) ||

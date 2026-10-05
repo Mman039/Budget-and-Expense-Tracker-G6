@@ -1,3 +1,4 @@
+// Large summary card shown at the top of the home dashboard.
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 import {
@@ -6,7 +7,10 @@ import {
 } from "../styles/expenseTrackerStyles";
 import { formatAmount } from "../utils/currency";
 
-// Displays a spending total and the number of expenses it represents.
+/**
+ * Displays the main month total with a supporting caption.
+ * This is the first thing the user sees when they open the app.
+ */
 export function ExpenseSummary({ total, caption }) {
   return (
     <View style={styles.heroCard}>

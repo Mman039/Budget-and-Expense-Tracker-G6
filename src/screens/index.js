@@ -1,3 +1,9 @@
+// This file acts as the app's main controller.
+// It keeps shared app data in memory, decides which screen is shown,
+// and connects the screen components to the same state.
+// Because this is a prototype, the data is not saved to storage and resets
+// when the app is reloaded.
+
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useState } from "react";
@@ -10,16 +16,26 @@ import { HistoryScreen } from "./HistoryScreen";
 import { HomeScreen } from "./HomeScreen";
 import { StatsScreen } from "./StatsScreen";
 
+// This date is hardcoded because the prototype uses a fixed sample month.
+// All calculations are based on this value so the dashboard numbers look consistent.
 const today = "2026-09-24";
 const maxQuickAdds = 6;
 const Stack = createNativeStackNavigator();
 
+// These are the default shortcut entries that appear in the add-expense form.
 const defaultQuickAdds = [
   { id: "coffee", label: "Coffee", amount: "7" },
   { id: "lunch", label: "Lunch", amount: "40" },
   { id: "ride2school", label: "Tricycle Fare", amount: "15" },
 ];
 
+/**
+ * Main app container.
+ *
+ * This component owns the prototype state for expenses, budgets, and quick-add
+ * shortcuts. The screen components receive the data through props, which keeps
+ * all pages synced without needing a global store.
+ */
 export default function Index() {
   const [expenses, setExpenses] = useState(initialExpenses);
   const [description, setDescription] = useState("");
@@ -32,6 +48,8 @@ export default function Index() {
   const [savedMonthlyBudget, setSavedMonthlyBudget] = useState(900);
   const [quickAdds, setQuickAdds] = useState(defaultQuickAdds);
 
+  // These filtered totals are used by the dashboard cards and reminder logic.
+  // They calculate spending for "recent" and "monthly" windows without needing a backend.
   const weekExpenses = expenses.filter((expense) => expense.date >= "2026-09-18");
   const monthExpenses = expenses.filter(
     (expense) => expense.date.substring(0, 7) === "2026-09",
@@ -42,6 +60,10 @@ export default function Index() {
   const weekTotal = weekExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   const monthTotal = monthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
+/**
+ * Validates the entered expense and adds it to the in-memory list.
+ * Returns true when the save succeeds so the caller can navigate away.
+ */
   const addExpense = () => {
     const parsedAmount = Number.parseFloat(amount);
     if (!description.trim() || !Number.isFinite(parsedAmount) || parsedAmount <= 0) {
@@ -79,16 +101,19 @@ export default function Index() {
     return true;
   };
 
+  // Removes a single expense from the current list by matching its unique id.
   const deleteExpense = (id) =>
     setExpenses((currentExpenses) =>
       currentExpenses.filter((expense) => expense.id !== id),
     );
 
+  // Prefills the expense form from a fast shortcut. This keeps repeated entries quick.
   const quickAdd = (quickAmount, quickDescription) => {
     setAmount(String(quickAmount));
     setDescription(quickDescription);
   };
 
+  // Updates a single field inside one quick-add item without mutating the rest.
   const updateQuickAdd = (id, field, value) => {
     setQuickAdds((currentQuickAdds) =>
       currentQuickAdds.map((item) =>
@@ -97,6 +122,7 @@ export default function Index() {
     );
   };
 
+  // Adds another reusable shortcut row, but never past the prototype limit.
   const addQuickAdd = () => {
     setQuickAdds((currentQuickAdds) => {
       if (currentQuickAdds.length >= maxQuickAdds) return currentQuickAdds;
@@ -111,12 +137,14 @@ export default function Index() {
     });
   };
 
+  // Deletes one shortcut from the quick-add list by id.
   const removeQuickAdd = (id) => {
     setQuickAdds((currentQuickAdds) =>
       currentQuickAdds.filter((item) => item.id !== id),
     );
   };
 
+  // Saves the edited budget limits into the values used by the warning and progress UI.
   const saveBudgets = () => {
     const nextWeeklyBudget = Number(weeklyBudget) || 0;
     const nextMonthlyBudget = Number(monthlyBudget) || 0;

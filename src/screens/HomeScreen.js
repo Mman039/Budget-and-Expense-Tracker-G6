@@ -1,3 +1,5 @@
+// This screen is the main dashboard for the prototype app.
+// It summarizes today's, week's, and month's spending and shows a chart plus recent entries.
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 import { BudgetWarning } from "../components/BudgetWarning";
@@ -13,6 +15,10 @@ import {
   getChartBarStyle,
 } from "../styles/expenseTrackerStyles";
 
+/**
+ * Displays the dashboard summary and the main spending chart.
+ * The 7-day chart is calculated from sample expense dates in the current prototype month.
+ */
 export function HomeScreen({
   expenses,
   today,

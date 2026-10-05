@@ -1,4 +1,5 @@
-// Provides sample records so the tracker has useful content on first launch.
+// This file seeds the app with sample data so the prototype looks populated on launch.
+// The values are intentionally static because there is no real backend or database yet.
 /** @type {import("../types/expense").Expense[]} */
 export const initialExpenses = [
     { id: "1", amount: 4.5, description: "Morning coffee", category: "food", date: "2026-09-24" },

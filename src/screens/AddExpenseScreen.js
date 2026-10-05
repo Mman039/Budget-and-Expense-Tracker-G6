@@ -1,3 +1,5 @@
+// This screen is the entry point for creating a new expense.
+// It includes the amount form, category picker, and shortcut buttons for repeated spending.
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { ExpenseForm } from "../components/ExpenseForm";
@@ -14,6 +16,10 @@ import {
 
 const maxQuickAdds = 6;
 
+/**
+ * Lets the user choose a category, type an amount, and save a new expense.
+ * The quick-add section stores reusable common purchase entries.
+ */
 export function AddExpenseScreen({
   description,
   amount,

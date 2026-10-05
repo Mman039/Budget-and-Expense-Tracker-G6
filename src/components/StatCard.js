@@ -1,7 +1,11 @@
+// Card used by the stats screen for key spending insight metrics.
 import { Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";
 
+/**
+ * Renders a single statistic with an icon, label, and value.
+ */
 export function StatCard({ label, value, icon, color }) {
   return (
     <View style={styles.statCard}>
