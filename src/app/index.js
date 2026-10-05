@@ -12,26 +12,12 @@ import {
     TextInput,
     View,
 } from "react-native";
+import { ExpenseForm } from "../components/ExpenseForm";
+import { ExpenseList } from "../components/ExpenseList";
+import { ExpenseSummary } from "../components/ExpenseSummary";
+import { categories, getCategory } from "../data/categories";
 import { initialExpenses } from "../data/initialExpenses";
-// Keeping categories in one place makes icons and colors consistent across every screen.
-const categories = [
-  { id: "food", name: "Food", icon: "fast-food-outline", color: "#F59E0B" },
-  { id: "transport", name: "Transport", icon: "bus-outline", color: "#0EA5E9" },
-  { id: "school", name: "School", icon: "school-outline", color: "#8B5CF6" },
-  {
-    id: "shopping",
-    name: "Shopping",
-    icon: "bag-handle-outline",
-    color: "#EC4899",
-  },
-  { id: "bills", name: "Bills", icon: "receipt-outline", color: "#10B981" },
-  {
-    id: "other",
-    name: "Other",
-    icon: "ellipsis-horizontal-circle-outline",
-    color: "#64748B",
-  },
-];
+import { formatAmount as money } from "../utils/currency";
 const tabs = [
   { id: "dashboard", label: "Home", icon: "home-outline" },
   { id: "add", label: "Add", icon: "add-circle-outline" },
@@ -40,8 +26,6 @@ const tabs = [
   { id: "stats", label: "Stats", icon: "bar-chart-outline" },
 ];
 const today = "2026-09-24";
-// Formats a number as Philippine pesos for consistent amounts across the app.
-const money = (amount) => `₱${amount.toFixed(2)}`;
 
 // These quick-add values are normal state so the user can change the label or amount.
 const defaultQuickAdds = [
@@ -49,20 +33,6 @@ const defaultQuickAdds = [
   { id: "lunch", label: "Lunch", amount: "40" },
   { id: "ride2school", label: "Tricycle Fare", amount: "15" },
 ];
-
-// Finds a category by id and falls back to Other when an unknown id is received.
-function getCategory(categoryId) {
-  return (
-    categories.find((category) => category.id === categoryId) ||
-    categories[categories.length - 1]
-  );
-}
-// Turns an ISO date into the shorter date label shown in each transaction row.
-function formatDate(date) {
-  if (date === today) return "Today";
-  const parts = date.split("-");
-  return `${parts[1]}/${parts[2]}/${parts[0]}`;
-}
 
 // Shows a friendly warning when spending is close to or above a budget limit.
 function BudgetWarning({
@@ -398,18 +368,12 @@ function Dashboard({
         weeklyBudget={savedWeeklyBudget}
         monthlyBudget={savedMonthlyBudget}
       />
-      <View style={styles.heroCard}>
-        <View>
-          <Text style={styles.heroLabel}>TOTAL THIS MONTH</Text>
-          <Text style={styles.heroAmount}>{money(monthTotal)}</Text>
-          <Text style={styles.heroCaption}>
-            Across {expenses.length} transactions
-          </Text>
-        </View>
-        <View style={styles.heroMark}>
-          <Ionicons name="trending-up" size={26} color={colors.mint} />
-        </View>
-      </View>
+      <ExpenseSummary
+        total={monthTotal}
+        expenseCount={expenses.length}
+        caption={`Across ${expenses.length} transactions`}
+        componentStyles={styles}
+      />
       <View style={styles.summaryRow}>
         <SummaryCard label="Today" value={todayTotal} color={colors.orange} />
         <SummaryCard label="This week" value={weekTotal} color={colors.blue} />
@@ -448,12 +412,13 @@ function Dashboard({
           ))}
         </View>
       </View>
-      <SectionTitle title="Recent transactions" action="See all" />
-      <View style={styles.card}>
-        {expenses.slice(0, 5).map((expense) => (
-          <TransactionRow key={expense.id} expense={expense} />
-        ))}
-      </View>
+      <ExpenseList
+        expenses={expenses.slice(0, 5)}
+        title="Recent transactions"
+        action="See all"
+        today={today}
+        componentStyles={styles}
+      />
     </>
   );
 }
@@ -476,28 +441,14 @@ function AddExpense({
       <Text style={styles.helperText}>
         A few taps now makes your budget clearer later.
       </Text>
-      <View style={styles.card}>
-        <Text style={styles.inputLabel}>AMOUNT</Text>
-        <View style={styles.amountBox}>
-          <Text style={styles.currency}>₱</Text>
-          <TextInput
-            value={amount}
-            onChangeText={setAmount}
-            placeholder="0.00"
-            placeholderTextColor={colors.muted}
-            keyboardType="decimal-pad"
-            style={styles.amountInput}
-          />
-        </View>
-        <Text style={styles.inputLabel}>DESCRIPTION</Text>
-        <TextInput
-          value={description}
-          onChangeText={setDescription}
-          placeholder="What did you spend on?"
-          placeholderTextColor={colors.muted}
-          style={styles.textInput}
-        />
-      </View>
+      <ExpenseForm
+        description={description}
+        amount={amount}
+        setDescription={setDescription}
+        setAmount={setAmount}
+        onSubmit={onSubmit}
+        componentStyles={styles}
+      />
       <SectionTitle title="Category" />
       <View style={styles.categoryGrid}>
         {categories.map((category) => (
@@ -592,65 +543,17 @@ function History({ expenses, searchText, setSearchText, onDelete }) {
           style={styles.searchInput}
         />
       </View>
-      <SectionTitle
+      <ExpenseList
+        expenses={filteredExpenses}
         title="All transactions"
         action={`${filteredExpenses.length} found`}
+        today={today}
+        emptyTitle="No transactions found"
+        emptyMessage="Try a different search."
+        onDelete={onDelete}
+        componentStyles={styles}
       />
-      <View style={styles.card}>
-        {filteredExpenses.length === 0 ? (
-          <EmptyState />
-        ) : (
-          filteredExpenses.map((expense) => (
-            <TransactionRow
-              key={expense.id}
-              expense={expense}
-              onDelete={onDelete}
-            />
-          ))
-        )}
-      </View>
     </>
-  );
-}
-// Renders one transaction with its category icon, date, amount, and optional delete action.
-function TransactionRow({ expense, onDelete }) {
-  const category = getCategory(expense.category);
-  return (
-    <View style={styles.transactionRow}>
-      <View
-        style={[
-          styles.transactionIcon,
-          { backgroundColor: `${category.color}20` },
-        ]}
-      >
-        <Ionicons name={category.icon} size={20} color={category.color} />
-      </View>
-      <View style={styles.transactionDetails}>
-        <Text style={styles.transactionDescription}>{expense.description}</Text>
-        <Text style={styles.transactionDate}>
-          {category.name} · {formatDate(expense.date)}
-        </Text>
-      </View>
-      <Text style={styles.transactionAmount}>{money(expense.amount)}</Text>
-      {onDelete && (
-        <Pressable
-          onPress={() => onDelete(expense.id)}
-          style={styles.deleteButton}
-        >
-          <Ionicons name="trash-outline" size={18} color={colors.muted} />
-        </Pressable>
-      )}
-    </View>
-  );
-}
-// Gives the history screen a friendly result when search finds nothing.
-function EmptyState() {
-  return (
-    <View style={styles.emptyState}>
-      <Ionicons name="search-outline" size={30} color={colors.muted} />
-      <Text style={styles.emptyTitle}>No transactions found</Text>
-      <Text style={styles.emptyText}>Try a different search.</Text>
-    </View>
   );
 }
 // Edits the weekly and monthly limits and shows how much remains.

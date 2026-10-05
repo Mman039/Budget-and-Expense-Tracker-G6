@@ -1,4 +1,5 @@
 // Provides sample records so the tracker has useful content on first launch.
+/** @type {import("../types/expense").Expense[]} */
 export const initialExpenses = [
     { id: "1", amount: 4.5, description: "Morning coffee", category: "food", date: "2026-09-24" },
     { id: "2", amount: 12.75, description: "Lunch with friends", category: "food", date: "2026-09-24" },
