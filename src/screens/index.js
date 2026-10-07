@@ -18,7 +18,7 @@ import { StatsScreen } from "./StatsScreen";
 
 // This date is hardcoded because the prototype uses a fixed sample month.
 // All calculations are based on this value so the dashboard numbers look consistent.
-const today = "2026-09-24";
+const today = "2026-10-08";
 const maxQuickAdds = 6;
 const Stack = createNativeStackNavigator();
 
@@ -50,23 +50,35 @@ export default function Index() {
 
   // These filtered totals are used by the dashboard cards and reminder logic.
   // They calculate spending for "recent" and "monthly" windows without needing a backend.
-  const weekExpenses = expenses.filter((expense) => expense.date >= "2026-09-18");
+  const weekExpenses = expenses.filter(
+    (expense) => expense.date >= "2026-09-18",
+  );
   const monthExpenses = expenses.filter(
     (expense) => expense.date.substring(0, 7) === "2026-09",
   );
   const todayTotal = expenses
     .filter((expense) => expense.date === today)
     .reduce((sum, expense) => sum + expense.amount, 0);
-  const weekTotal = weekExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-  const monthTotal = monthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const weekTotal = weekExpenses.reduce(
+    (sum, expense) => sum + expense.amount,
+    0,
+  );
+  const monthTotal = monthExpenses.reduce(
+    (sum, expense) => sum + expense.amount,
+    0,
+  );
 
-/**
- * Validates the entered expense and adds it to the in-memory list.
- * Returns true when the save succeeds so the caller can navigate away.
- */
+  /**
+   * Validates the entered expense and adds it to the in-memory list.
+   * Returns true when the save succeeds so the caller can navigate away.
+   */
   const addExpense = () => {
     const parsedAmount = Number.parseFloat(amount);
-    if (!description.trim() || !Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+    if (
+      !description.trim() ||
+      !Number.isFinite(parsedAmount) ||
+      parsedAmount <= 0
+    ) {
       Alert.alert(
         "Missing details",
         "Add a description and an amount greater than zero.",
