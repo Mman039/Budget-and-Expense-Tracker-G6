@@ -55,14 +55,14 @@ export default function Index() {
     (expense) => expense.date >= "2026-09-18",
   );
   const monthExpenses = expenses.filter(
-    (expense) => expense.date.substring(0, 7) === "2026-09",
+    (expense) => expense.date.substring(0, 7) === "2026-09", //0,7 means the first 7 characters of the date string, which is the year and month
   );
   const todayTotal = expenses
     .filter((expense) => expense.date === today)
-    .reduce((sum, expense) => sum + expense.amount, 0);
+    .reduce((sum, expense) => sum + expense.amount, 0); //.reduce is a method that takes an array and reduces it to a single value by applying a function to each element in the array. In this case, it sums up the amounts of all expenses for today.
   const weekTotal = weekExpenses.reduce(
     (sum, expense) => sum + expense.amount,
-    0,
+    0, //0 is the initial value of the sum, so if there are no expenses for the week, the total will be 0.
   );
   const monthTotal = monthExpenses.reduce(
     (sum, expense) => sum + expense.amount,
@@ -86,6 +86,7 @@ export default function Index() {
       );
       return false;
     }
+    //this checks if the description is empty or only whitespace, if the amount is not a valid number, or if the amount is less than or equal to zero. If any of these conditions are true, it shows an alert and returns false to indicate that the expense was not added.
 
     const nextWeekTotal = weekTotal + parsedAmount;
     const nextMonthTotal = monthTotal + parsedAmount;
@@ -107,7 +108,7 @@ export default function Index() {
         category: selectedCategory,
         date: today,
       },
-      ...currentExpenses,
+      ...currentExpenses, //...currentExpenses means that the new expense is added to the beginning of the array, so the most recent expenses appear first in the list.
     ]);
     setDescription("");
     setAmount("");
@@ -162,7 +163,7 @@ export default function Index() {
     const nextWeeklyBudget = Number(weeklyBudget) || 0;
     const nextMonthlyBudget = Number(monthlyBudget) || 0;
     setSavedWeeklyBudget(nextWeeklyBudget);
-    setSavedMonthlyBudget(nextMonthlyBudget);
+    setSavedMonthlyBudget(nextMonthlyBudget); //nextWeeklyBudget and nextMonthlyBudget are the new budget values that the user has entered. If the user enters a non-numeric value, it will default to 0. The savedWeeklyBudget and savedMonthlyBudget state variables are updated with these new values.
 
     if (
       (nextWeeklyBudget > 0 && weekTotal > nextWeeklyBudget) ||
