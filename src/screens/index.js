@@ -88,7 +88,7 @@ export default function Index() {
     }
     //this checks if the description is empty or only whitespace, if the amount is not a valid number, or if the amount is less than or equal to zero. If any of these conditions are true, it shows an alert and returns false to indicate that the expense was not added.
 
-    const nextWeekTotal = weekTotal + parsedAmount;
+    const nextWeekTotal = weekTotal + parsedAmount; //
     const nextMonthTotal = monthTotal + parsedAmount;
     if (
       (savedWeeklyBudget > 0 && nextWeekTotal > savedWeeklyBudget) ||
@@ -98,7 +98,7 @@ export default function Index() {
         "Budget reminder",
         "This expense will put you over one of your budget limits.",
       );
-    }
+    } //this checks if the new expense will cause the user to exceed their weekly or monthly budget. If so, it shows a reminder alert but still allows the expense to be added.
 
     setExpenses((currentExpenses) => [
       {
@@ -113,7 +113,7 @@ export default function Index() {
     setDescription("");
     setAmount("");
     return true;
-  };
+  }; //this adds the new expense to the beginning of the expenses array, resets the description and amount fields, and returns true to indicate that the expense was successfully added.
 
   // Removes a single expense from the current list by matching its unique id.
   const deleteExpense = (id) =>
