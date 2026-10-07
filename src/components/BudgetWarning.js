@@ -20,7 +20,7 @@ export function BudgetWarning({
   const weeklyOver = weeklyBudget > 0 && weeklySpent >= weeklyBudget;
   const monthlyOver = monthlyBudget > 0 && monthlySpent >= monthlyBudget;
   const weeklyNear = weeklyBudget > 0 && weeklySpent >= weeklyBudget * 0.8;
-  const monthlyNear = monthlyBudget > 0 && monthlySpent >= monthlyBudget * 0.8;
+  const monthlyNear = monthlyBudget > 0 && monthlySpent >= monthlyBudget * 0.8; //0.8 means 80% of the budget, so if the user has spent 80% or more of their monthly budget, this will be true.
 
   if (!weeklyNear && !monthlyNear) return null;
 
@@ -52,7 +52,7 @@ export function BudgetWarning({
         name={
           weeklyOver || monthlyOver
             ? "warning-outline"
-            : "notifications-outline"
+            : "notifications-outline" //if the user is over budget, show a warning icon; if they are near budget, show a notification icon.
         }
         size={22}
         color={weeklyOver || monthlyOver ? colors.warning : colors.orange}
