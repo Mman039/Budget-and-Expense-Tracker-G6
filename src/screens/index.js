@@ -18,7 +18,7 @@ import { StatsScreen } from "./StatsScreen";
 
 // This date is hardcoded because the prototype uses a fixed sample month.
 // All calculations are based on this value so the dashboard numbers look consistent.
-const today = "2026-09-18";
+const today = "2026-09-25";
 const maxQuickAdds = 6;
 const Stack = createNativeStackNavigator();
 
