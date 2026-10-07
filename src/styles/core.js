@@ -6,9 +6,17 @@ import { colors } from "./tokens";
 
 export const expenseTrackerStyles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.canvas }, // The safe area is the outermost container that ensures content doesn't overlap with device notches or status bars.
-  appShell: { flex: 1 },
-  content: { padding: 20, paddingBottom: 32 },
+  appShell: {
+    // The main app shell container that fills the available screen area while letting inner screens lay out content.
+    flex: 1,
+  },
+  content: {
+    // Shared screen padding that creates the standard horizontal spacing and extra bottom spacing for scrollable content.
+    padding: 20,
+    paddingBottom: 32,
+  },
   header: {
+    // The top row of a screen, used to align the page title and any header action or icon on the same line.
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -24,6 +32,7 @@ export const expenseTrackerStyles = StyleSheet.create({
   },
   title: { color: colors.ink, fontSize: 30, fontWeight: "800" }, // The main title of a screen, typically the largest text element, used to convey the primary purpose or content of the page.
   headerIcon: {
+    // The circular header action background used for settings, filters, or other quick screen-level controls.
     width: 44,
     height: 44,
     borderRadius: 14,
@@ -56,6 +65,7 @@ export const expenseTrackerStyles = StyleSheet.create({
   },
   heroCaption: { color: "#B7C9D8", marginTop: 5, fontSize: 13 }, // Supporting text below the main amount in the hero card, often used to provide additional context or information about the total displayed.
   heroMark: {
+    // The small accent circle used beside the hero total to visually anchor the summary card.
     width: 48,
     height: 48,
     borderRadius: 16,
@@ -73,7 +83,13 @@ export const expenseTrackerStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  dot: { width: 7, height: 7, borderRadius: 4, marginBottom: 9 },
+  dot: {
+    // Small color indicator used inside summary cards to quickly show the metric or trend being represented.
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    marginBottom: 9,
+  },
   summaryLabel: { color: colors.muted, fontSize: 11, fontWeight: "700" }, // The label text in a summary card, providing a brief description of the metric being displayed.
   summaryValue: {
     // The total amount or value displayed in a summary card, representing the metric's numerical data.
@@ -164,24 +180,54 @@ export const expenseTrackerStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  transactionDetails: { flex: 1, marginLeft: 11 },
+  transactionDetails: {
+    // The text column in a transaction row, holding the description and metadata while the icon sits to the left.
+    flex: 1,
+    marginLeft: 11,
+  },
   transactionDescription: {
+    // The label for the transaction name or category, usually presented prominently in each list item.
     color: colors.ink,
     fontSize: 14,
     fontWeight: "700",
   },
-  transactionDate: { color: colors.muted, fontSize: 11, marginTop: 4 },
-  transactionAmount: { color: colors.ink, fontSize: 14, fontWeight: "800" },
-  deleteButton: { padding: 8, marginLeft: 3 },
-  emptyState: { alignItems: "center", padding: 24 },
+  transactionDate: {
+    // Smaller metadata text beneath the transaction description, usually showing the transaction date or time.
+    color: colors.muted,
+    fontSize: 11,
+    marginTop: 4,
+  },
+  transactionAmount: {
+    // The money value for a transaction, shown prominently to the right of the row.
+    color: colors.ink,
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  deleteButton: {
+    // A compact delete action attached to a transaction row or list item.
+    padding: 8,
+    marginLeft: 3,
+  },
+  emptyState: {
+    // Centered empty-state layout used when no data is available yet.
+    alignItems: "center",
+    padding: 24,
+  },
   emptyTitle: {
+    // The headline inside an empty-state card, telling the user there is no content to display.
     color: colors.ink,
     fontSize: 15,
     fontWeight: "800",
     marginTop: 10,
   },
-  emptyText: { color: colors.muted, fontSize: 13, marginTop: 5 },
+  emptyText: {
+    // Supporting copy for an empty-state view that explains what the user can do next.
+    color: colors.muted,
+    fontSize: 13,
+    marginTop: 5,
+  },
   tabBar: {
+    // The bottom navigation container that keeps the app tabs fixed and easy to access.
     backgroundColor: colors.white,
     borderTopWidth: 1,
     borderTopColor: colors.border,
@@ -189,8 +235,14 @@ export const expenseTrackerStyles = StyleSheet.create({
     height: 72,
     paddingBottom: 7,
   },
-  tabButton: { alignItems: "center", flex: 1, justifyContent: "center" },
+  tabButton: {
+    // Individual tab item in the bottom navigation, centered to keep the icon and label aligned.
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+  },
   tabLabel: {
+    // The default label style for an inactive tab, keeping the text subtle and easy to scan.
     color: colors.muted,
     fontSize: 10,
     fontWeight: "700",
@@ -198,12 +250,14 @@ export const expenseTrackerStyles = StyleSheet.create({
   },
   tabLabelActive: { color: colors.navy },
   helperText: {
+    // Supporting explanatory text that sits between form sections or above inputs.
     color: colors.muted,
     fontSize: 14,
     lineHeight: 21,
     marginBottom: 22,
   },
   inputLabel: {
+    // Small uppercase-style label used above fields to identify what the user is entering.
     color: colors.muted,
     fontSize: 10,
     fontWeight: "800",
@@ -212,6 +266,7 @@ export const expenseTrackerStyles = StyleSheet.create({
     marginTop: 4,
   },
   amountBox: {
+    // Rounded amount input container that visually groups the currency symbol and numeric input together.
     alignItems: "center",
     backgroundColor: colors.canvas,
     borderRadius: 13,
@@ -219,8 +274,14 @@ export const expenseTrackerStyles = StyleSheet.create({
     marginBottom: 18,
     paddingHorizontal: 14,
   },
-  currency: { color: colors.navy, fontSize: 22, fontWeight: "800" },
+  currency: {
+    // The currency symbol displayed beside the amount field, usually styled as the leading value marker.
+    color: colors.navy,
+    fontSize: 22,
+    fontWeight: "800",
+  },
   amountInput: {
+    // The main numeric field for entering a monetary value, using a large, easy-to-read amount style.
     color: colors.ink,
     flex: 1,
     fontSize: 28,
@@ -228,6 +289,7 @@ export const expenseTrackerStyles = StyleSheet.create({
     padding: 14,
   },
   budgetInput: {
+    // Form field used for entering a budget amount with a slightly smaller, compact style than the main amount input.
     color: colors.ink,
     flex: 1,
     fontSize: 18,
@@ -235,6 +297,7 @@ export const expenseTrackerStyles = StyleSheet.create({
     padding: 12,
   },
   textInput: {
+    // Standard text field style used for descriptive entries such as notes, names, or labels.
     backgroundColor: colors.canvas,
     borderRadius: 13,
     color: colors.ink,
@@ -243,12 +306,14 @@ export const expenseTrackerStyles = StyleSheet.create({
     marginBottom: 3,
   },
   categoryGrid: {
+    // Grid layout for category selections, allowing options to wrap across multiple rows and stay compact.
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
     marginBottom: 20,
   },
   categoryButton: {
+    // Individual category option in a selector grid, styled as a rounded card with optional accent coloring.
     alignItems: "center",
     backgroundColor: colors.white,
     borderColor: colors.border,
@@ -259,6 +324,7 @@ export const expenseTrackerStyles = StyleSheet.create({
   },
   categoryButtonSelected: { borderWidth: 1 },
   categoryIcon: {
+    // A circular icon container inside a category option, sized to sit next to the category label.
     alignItems: "center",
     borderRadius: 12,
     height: 38,
@@ -266,18 +332,21 @@ export const expenseTrackerStyles = StyleSheet.create({
     width: 38,
   },
   categoryName: {
+    // The label under each category icon, kept small so multiple options can fit in a grid.
     color: colors.ink,
     fontSize: 11,
     fontWeight: "700",
     marginTop: 6,
   },
   quickRow: {
+    // A wrap row for quick action buttons that lets several shortcuts sit in a compact layout.
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 9,
     marginBottom: 23,
   },
   quickButton: {
+    // A short action chip used for quick entry presets or common transaction values.
     backgroundColor: colors.white,
     borderColor: colors.border,
     borderRadius: 14,
@@ -287,6 +356,7 @@ export const expenseTrackerStyles = StyleSheet.create({
     padding: 12,
   },
   primaryButton: {
+    // The main action button for submitting a form or saving new data.
     alignItems: "center",
     backgroundColor: colors.navy,
     borderRadius: 15,
@@ -296,8 +366,14 @@ export const expenseTrackerStyles = StyleSheet.create({
     minHeight: 54,
     marginBottom: 18,
   },
-  primaryButtonText: { color: colors.white, fontSize: 15, fontWeight: "800" },
+  primaryButtonText: {
+    // The text inside the primary button, strongly styled to contrast with the dark navy background.
+    color: colors.white,
+    fontSize: 15,
+    fontWeight: "800",
+  },
   searchBox: {
+    // Rounded search field styling for filtering lists or content within a screen.
     alignItems: "center",
     backgroundColor: colors.white,
     borderColor: colors.border,
@@ -307,15 +383,27 @@ export const expenseTrackerStyles = StyleSheet.create({
     marginBottom: 24,
     paddingHorizontal: 14,
   },
-  searchInput: { color: colors.ink, flex: 1, fontSize: 14, padding: 14 },
+  searchInput: {
+    // The text entry portion of a search field, expanded to fill the available width while keeping spacing consistent.
+    color: colors.ink,
+    flex: 1,
+    fontSize: 14,
+    padding: 14,
+  },
   remainingText: {
+    // Secondary text that shows how much budget or room is left after a transaction or allocation.
     color: colors.muted,
     fontSize: 12,
     marginTop: -8,
     marginBottom: 20,
   },
-  statGrid: { gap: 10, marginBottom: 23 },
+  statGrid: {
+    // A compact grid of summary stats, useful for higher-level indicators like income, spending, or savings.
+    gap: 10,
+    marginBottom: 23,
+  },
   statCard: {
+    // Individual stat card that displays a key number and its associated label.
     backgroundColor: colors.white,
     borderColor: colors.border,
     borderRadius: 17,
@@ -323,29 +411,34 @@ export const expenseTrackerStyles = StyleSheet.create({
     padding: 16,
   },
   statLabel: {
+    // Small label above a statistic value, clarifying what the number represents.
     color: colors.muted,
     fontSize: 12,
     fontWeight: "700",
     marginTop: 11,
   },
   statValue: {
+    // Main numeric value inside a stat card, usually the most prominent content on the card.
     color: colors.ink,
     fontSize: 22,
     fontWeight: "800",
     marginTop: 4,
   },
   breakdownRow: {
+    // Horizontal row used to represent a single category breakdown item with a label, bar, and value.
     alignItems: "center",
     flexDirection: "row",
     marginBottom: 17,
   },
   breakdownName: {
+    // The category name on a breakdown row, kept narrow to allow the progress bar to sit beside it.
     color: colors.ink,
     fontSize: 12,
     fontWeight: "700",
     width: 76,
   },
   breakdownTrack: {
+    // The full-width track behind a category progress bar, providing the total capacity for the visual fill.
     backgroundColor: "#E9EFF3",
     borderRadius: 5,
     flex: 1,
@@ -353,11 +446,13 @@ export const expenseTrackerStyles = StyleSheet.create({
     overflow: "hidden",
   },
   breakdownFill: {
+    // The colored portion of a category breakdown row, reflecting the current percentage filled.
     backgroundColor: colors.green,
     borderRadius: 5,
     height: 7,
   },
   breakdownValue: {
+    // Numeric percentage shown at the end of a breakdown row to reinforce the bar result.
     color: colors.muted,
     fontSize: 11,
     marginLeft: 8,

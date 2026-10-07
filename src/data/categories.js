@@ -33,4 +33,4 @@ export function getCategory(categoryId) {
     categories.find((category) => category.id === categoryId) ||
     categories[categories.length - 1]
   );
-} //this function takes a categoryId as an argument and searches the categories array for a matching category object. If it finds one, it returns that object. If it doesn't find a match, it returns the last category in the array, which is the "Other" category. This ensures that the function always returns a valid category object, even if the input is invalid or missing.
+}
