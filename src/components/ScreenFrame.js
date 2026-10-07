@@ -4,8 +4,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 import {
   colors,
-  expenseTrackerStyles as styles,
   getTabLabelStyle,
+  expenseTrackerStyles as styles,
 } from "../styles/expenseTrackerStyles";
 
 // These tab definitions control the bottom navigation for the prototype app.
