@@ -9,9 +9,9 @@ import { categories } from "../data/categories";
 import {
   colors,
   expenseTrackerExtraStyles as extraStyles,
-  expenseTrackerStyles as styles,
   getCategoryButtonStyle,
   getCategoryIconStyle,
+  expenseTrackerStyles as styles,
 } from "../styles/expenseTrackerStyles";
 
 const maxQuickAdds = 6;
@@ -38,7 +38,7 @@ export function AddExpenseScreen({
     <>
       <Header eyebrow="NEW TRANSACTION" title="Add expense" />
       <Text style={styles.helperText}>
-        A few taps now makes your budget clearer later.
+        Money-tor your money with a tracker.
       </Text>
       <ExpenseForm
         description={description}
@@ -65,14 +65,19 @@ export function AddExpenseScreen({
           </Pressable>
         ))}
       </View>
-      <SectionTitle title="Quick add" action={`${quickAdds.length}/${maxQuickAdds}`} />
+      <SectionTitle
+        title="Quick add"
+        action={`${quickAdds.length}/${maxQuickAdds}`}
+      />
       <View style={styles.quickRow}>
         {quickAdds.map((quickAdd) => (
           <View key={quickAdd.id} style={styles.quickButton}>
             <View style={extraStyles.quickHeader}>
               <TextInput
                 value={quickAdd.label}
-                onChangeText={(value) => onEditQuickAdd(quickAdd.id, "label", value)}
+                onChangeText={(value) =>
+                  onEditQuickAdd(quickAdd.id, "label", value)
+                }
                 style={extraStyles.quickInput}
                 placeholder="Label"
                 placeholderTextColor={colors.muted}
@@ -91,7 +96,9 @@ export function AddExpenseScreen({
               <Text style={extraStyles.currencySmall}>₱</Text>
               <TextInput
                 value={quickAdd.amount}
-                onChangeText={(value) => onEditQuickAdd(quickAdd.id, "amount", value)}
+                onChangeText={(value) =>
+                  onEditQuickAdd(quickAdd.id, "amount", value)
+                }
                 keyboardType="decimal-pad"
                 style={extraStyles.quickAmountInput}
                 placeholder="0.00"
