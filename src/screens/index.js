@@ -18,7 +18,7 @@ import { StatsScreen } from "./StatsScreen";
 
 // This date is hardcoded because the prototype uses a fixed sample month.
 // All calculations are based on this value so the dashboard numbers look consistent.
-const today = "2026-10-08";
+const today = "2026-09-18";
 const maxQuickAdds = 6;
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +35,7 @@ const defaultQuickAdds = [
  * This component owns the prototype state for expenses, budgets, and quick-add
  * shortcuts. The screen components receive the data through props, which keeps
  * all pages synced without needing a global store.
+ * A Prop is a way to pass data from a parent component to a child component in React.
  */
 export default function Index() {
   const [expenses, setExpenses] = useState(initialExpenses);
