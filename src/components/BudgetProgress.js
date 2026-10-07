@@ -10,7 +10,7 @@ import { formatAmount as money } from "../utils/currency";
  * Renders a horizontal bar whose width reflects the percentage of the budget used.
  */
 export function BudgetProgress({ label, spent, budget }) {
-  const progress = budget > 0 ? Math.min(spent / budget, 1) : 0;
+  const progress = budget > 0 ? Math.min(spent / budget, 1) : 0; // Calculate the progress as a fraction of the budget, ensuring it doesn't exceed 1 (100%).
 
   return (
     <View style={styles.progressBlock}>
