@@ -4,7 +4,11 @@ import { Header } from "../components/Header";
 import { SectionTitle } from "../components/SectionTitle";
 import { StatCard } from "../components/StatCard";
 import { categories } from "../data/categories";
-import { colors, expenseTrackerStyles as styles, getBreakdownFillStyle } from "../styles/expenseTrackerStyles";
+import {
+  colors,
+  getBreakdownFillStyle,
+  expenseTrackerStyles as styles,
+} from "../styles/expenseTrackerStyles";
 import { formatAmount as money } from "../utils/currency";
 
 /**
@@ -15,18 +19,18 @@ export function StatsScreen({ expenses, monthTotal }) {
   const highest = expenses.reduce(
     (max, expense) => Math.max(max, expense.amount),
     0,
-  );
+  ); // Find the highest single expense amount from the list of expenses.
   const categoryTotals = categories.map((category) => ({
     name: category.name,
     total: expenses
       .filter((expense) => expense.category === category.id)
       .reduce((sum, expense) => sum + expense.amount, 0),
-  }));
+  })); // Calculate the total spending for each category by filtering expenses and summing their amounts.
   const topCategory = categoryTotals.reduce(
-    (top, category) => (category.total > top.total ? category : top),
-    categoryTotals[0],
+    (top, category) => (category.total > top.total ? category : top), // Find the category with the highest total spending.
+    categoryTotals[0], // Start with the first category as the initial top category.
   );
-  const average = expenses.length > 0 ? monthTotal / 30 : 0;
+  const average = expenses.length > 0 ? monthTotal / 30 : 0; // Calculate the daily average spending by dividing the total monthly spending by 30, ensuring there are expenses to avoid division by zero.
 
   return (
     <>
