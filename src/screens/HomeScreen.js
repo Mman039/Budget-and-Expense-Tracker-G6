@@ -2,8 +2,8 @@
 // It summarizes today's, week's, and month's spending and shows a chart plus recent entries.
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
-import { BudgetWarning } from "../components/BudgetWarning";
 import { BudgetProgress } from "../components/BudgetProgress";
+import { BudgetWarning } from "../components/BudgetWarning";
 import { ExpenseList } from "../components/ExpenseList";
 import { ExpenseSummary } from "../components/ExpenseSummary";
 import { Header } from "../components/Header";
@@ -11,8 +11,8 @@ import { SectionTitle } from "../components/SectionTitle";
 import { SummaryCard } from "../components/SummaryCard";
 import {
   colors,
-  expenseTrackerStyles as styles,
   getChartBarStyle,
+  expenseTrackerStyles as styles,
 } from "../styles/expenseTrackerStyles";
 
 /**
@@ -36,8 +36,8 @@ export function HomeScreen({
     expenses
       .filter((expense) => expense.date === `2026-09-${day}`)
       .reduce((sum, expense) => sum + expense.amount, 0),
-  );
-  const maxChartValue = Math.max(...chartTotals, 1);
+  ); // Calculate the total spending for each of the last 7 days by filtering expenses by date and summing their amounts.
+  const maxChartValue = Math.max(...chartTotals, 1); // Find the maximum spending value from the last 7 days to scale the chart bars, ensuring a minimum of 1 to avoid division by zero.
 
   return (
     <>
@@ -63,7 +63,11 @@ export function HomeScreen({
       <View style={styles.summaryRow}>
         <SummaryCard label="Today" value={todayTotal} color={colors.orange} />
         <SummaryCard label="This week" value={weekTotal} color={colors.blue} />
-        <SummaryCard label="This month" value={monthTotal} color={colors.green} />
+        <SummaryCard
+          label="This month"
+          value={monthTotal}
+          color={colors.green}
+        />
       </View>
       <SectionTitle title="Budget progress" />
       <View style={styles.card}>
@@ -78,7 +82,11 @@ export function HomeScreen({
           budget={savedMonthlyBudget}
         />
       </View>
-      <SectionTitle title="Last 7 days" action="View stats" onAction={onStats} />
+      <SectionTitle
+        title="Last 7 days"
+        action="View stats"
+        onAction={onStats}
+      />
       <View style={styles.card}>
         <View style={styles.chart}>
           {chartTotals.map((total, index) => (
