@@ -38,6 +38,7 @@ const defaultQuickAdds = [
  * A Prop is a way to pass data from a parent component to a child component in React.
  */
 export default function Index() {
+  //default means that this is the main component exported from this file, and it can be imported without using curly braces in other files.
   const [expenses, setExpenses] = useState(initialExpenses);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
