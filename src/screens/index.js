@@ -89,7 +89,7 @@ export default function Index() {
     }
     //this checks if the description is empty or only whitespace, if the amount is not a valid number, or if the amount is less than or equal to zero. If any of these conditions are true, it shows an alert and returns false to indicate that the expense was not added.
 
-    const nextWeekTotal = weekTotal + parsedAmount; //
+    const nextWeekTotal = weekTotal + parsedAmount;
     const nextMonthTotal = monthTotal + parsedAmount;
     if (
       (savedWeeklyBudget > 0 && nextWeekTotal > savedWeeklyBudget) ||
