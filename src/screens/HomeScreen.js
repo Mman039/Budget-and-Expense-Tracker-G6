@@ -44,11 +44,6 @@ export function HomeScreen({
       <Header
         eyebrow={dateLabel}
         title={greeting}
-        action={
-          <Pressable style={styles.headerIcon} onPress={onAdd}>
-            <Ionicons name="add" size={24} color={colors.white} />
-          </Pressable>
-        }
       />
       <BudgetWarning
         weeklySpent={weekTotal}
@@ -82,6 +77,14 @@ export function HomeScreen({
           budget={savedMonthlyBudget}
         />
       </View>
+      <Pressable
+        style={styles.primaryButton}
+        onPress={onAdd}
+        accessibilityRole="button"
+      >
+        <Ionicons name="add-circle-outline" size={21} color={colors.white} />
+        <Text style={styles.primaryButtonText}>Add expense</Text>
+      </Pressable>
       <SectionTitle
         title="Last 7 days"
         action="View stats"
