@@ -1,5 +1,5 @@
-// Re-export file for the style system.
-// This keeps old imports working while the style files are separated into smaller modules.
+// This file collects styles from the smaller style files.
+// Components import from here so their import lines stay short.
 export { colors } from "./tokens";
 export { expenseTrackerExtraStyles } from "./extras";
 export { expenseTrackerStyles } from "./core";

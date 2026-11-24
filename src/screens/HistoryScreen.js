@@ -7,10 +7,13 @@ import { getCategory } from "../data/categories";
 import { colors, expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";
 
 /**
- * Filters transactions and asks before deleting an expense.
+ * Shows all saved expenses.
+ * The search box filters the list by description or category.
+ * Deleting an expense requires confirmation first.
  */
 export function HistoryScreen({ expenses, today, onDelete }) {
   const [searchText, setSearchText] = useState("");
+  // Match text from either the expense description or the category name.
   const filteredExpenses = expenses.filter(
     (expense) =>
       expense.description.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -19,6 +22,7 @@ export function HistoryScreen({ expenses, today, onDelete }) {
         .includes(searchText.toLowerCase()),
   );
 
+  // Ask the user before an expense is removed.
   const confirmDelete = (expenseId) => {
     Alert.alert("Delete expense?", "This transaction will be removed.", [
       { text: "Cancel", style: "cancel" },

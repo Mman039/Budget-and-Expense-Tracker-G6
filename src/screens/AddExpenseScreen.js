@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { ExpenseForm } from "../components/ExpenseForm";
 import { Header } from "../components/Header";
@@ -13,10 +13,13 @@ import {
   expenseTrackerStyles as styles,
 } from "../styles/expenseTrackerStyles";
 
+// This is the largest number of quick-add shortcuts the screen can show.
 const maxQuickAdds = 6;
 
 /**
- * Lets the user enter an expense and manage reusable quick-add shortcuts.
+ * Shows the add-expense form.
+ * It lets the user type an amount and description, choose a category,
+ * use or edit quick-add shortcuts, and save the expense.
  */
 export function AddExpenseScreen({
   quickAdds,
@@ -30,6 +33,8 @@ export function AddExpenseScreen({
   const [amount, setAmount] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("food");
 
+  // Send the form values to the parent screen.
+  // Clear the amount and description only after a valid expense is saved.
   const submitExpense = () => {
     if (onSubmit({ description, amount, category: selectedCategory })) {
       setDescription("");
@@ -37,6 +42,7 @@ export function AddExpenseScreen({
     }
   };
 
+  // Copy a shortcut's label and amount into the expense form.
   const applyQuickAdd = (quickAdd) => {
     setAmount(quickAdd.amount);
     setDescription(quickAdd.label);

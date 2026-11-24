@@ -1,8 +1,6 @@
 /**
- * Expense shape used as a lightweight developer hint for the project.
- *
- * This file does not affect runtime behavior directly. It helps JavaScript IDEs
- * understand what each transaction object should look like when the app is being edited.
+ * Describes the expected shape of one expense.
+ * This comment helps editors show the names and types of expense values.
  *
  * @typedef {Object} Expense
  * @property {string} id Unique transaction id

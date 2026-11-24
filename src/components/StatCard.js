@@ -1,4 +1,4 @@
-// Card used by the stats screen for key spending insight metrics.
+// Shows one short spending statistic on the stats screen.
 import { Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";

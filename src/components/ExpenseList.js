@@ -1,4 +1,4 @@
-// Shared list used for recent expenses and search results.
+// Shows a shared list for recent expenses and search results.
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 import { getCategory } from "../data/categories";

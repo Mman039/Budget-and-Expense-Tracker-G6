@@ -1,5 +1,5 @@
-// This file keeps every spending category in one place.
-// Putting the names, icons, and colors together makes the code easier to reuse and keep consistent.
+// Every expense category has an id, name, icon, and color.
+// Keeping these values here makes the whole app use the same category choices.
 export const categories = [
   { id: "food", name: "Food", icon: "fast-food-outline", color: "#F59E0B" },
   {

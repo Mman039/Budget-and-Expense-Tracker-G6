@@ -1,38 +1,40 @@
-// Core visual styles for the app's screens and reusable components.
-// This file holds the main design system: cards, lists, buttons, inputs, and layout blocks.
+// Shared visual styles for screens and components.
+// Most sizes and colors use the values in tokens.js.
 import { StyleSheet } from "react-native";
 
 import { colors } from "./tokens";
 
 export const expenseTrackerStyles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.canvas }, // The safe area is the outermost container that ensures content doesn't overlap with device notches or status bars.
+  // SafeAreaView keeps content away from device edges and status bars.
+  safeArea: { flex: 1, backgroundColor: colors.canvas },
   appShell: {
-    // The main app shell container that fills the available screen area while letting inner screens lay out content.
+    // Fills the screen available for each app page.
     flex: 1,
   },
   content: {
-    // Shared screen padding that creates the standard horizontal spacing and extra bottom spacing for scrollable content.
+    // Adds even page padding and extra space at the bottom for scrolling.
     padding: 20,
     paddingBottom: 32,
   },
   header: {
-    // The top row of a screen, used to align the page title and any header action or icon on the same line.
+    // Places the page title and optional close or action button on one row.
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 22,
   },
   eyebrow: {
-    // Small label above the main title, often used for context or categorization.
+    // Small text above the main page title.
     color: colors.muted,
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 1.4,
     marginBottom: 6,
   },
-  title: { color: colors.ink, fontSize: 30, fontWeight: "800" }, // The main title of a screen, typically the largest text element, used to convey the primary purpose or content of the page.
+  // The largest and clearest text on a screen.
+  title: { color: colors.ink, fontSize: 30, fontWeight: "800" },
   headerIcon: {
-    // The circular header action background used for settings, filters, or other quick screen-level controls.
+    // Rounded background for a small header action.
     width: 44,
     height: 44,
     borderRadius: 14,

@@ -12,7 +12,8 @@ import {
 import { formatAmount as money } from "../utils/currency";
 
 /**
- * Displays editable weekly and monthly maximum values.
+ * Shows the weekly and monthly budget fields.
+ * It also shows the amount spent and the amount left for each limit.
  */
 export function BudgetScreen({
   weeklyBudget,
@@ -21,6 +22,7 @@ export function BudgetScreen({
   monthTotal,
   onSave,
 }) {
+  // Text inputs keep separate values until the user presses Save budgets.
   const [weeklyInput, setWeeklyInput] = useState(String(weeklyBudget));
   const [monthlyInput, setMonthlyInput] = useState(String(monthlyBudget));
 

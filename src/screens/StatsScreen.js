@@ -13,7 +13,8 @@ import {
 import { formatAmount as money } from "../utils/currency";
 
 /**
- * Shows spending insights and fetches a live PHP-to-USD reference rate.
+ * Shows this month's spending information.
+ * It also loads the current PHP-to-USD exchange rate from an internet service.
  */
 export function StatsScreen({ expenses, monthTotal }) {
   const [exchangeRate, setExchangeRate] = useState(null);
@@ -22,13 +23,16 @@ export function StatsScreen({ expenses, monthTotal }) {
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
+    // Stop old requests after a screen change or while a new rate is loading.
     const controller = new AbortController();
     let isActive = true;
 
     async function fetchExchangeRate() {
+      // Show loading while starting a new request.
       setIsLoadingRate(true);
       setRateError("");
       try {
+        // Ask the exchange-rate service for the latest PHP rates.
         const response = await fetch("https://open.er-api.com/v6/latest/PHP", {
           signal: controller.signal,
         });
@@ -37,6 +41,7 @@ export function StatsScreen({ expenses, monthTotal }) {
         }
         const result = await response.json();
         const rate = result?.rates?.USD;
+        // Only keep the rate if the service reports success and a valid number.
         if (
           result?.result !== "success" ||
           !Number.isFinite(rate) ||
@@ -51,37 +56,44 @@ export function StatsScreen({ expenses, monthTotal }) {
           });
         }
       } catch (error) {
+        // Ignore an expected cancellation and show a useful message for other errors.
         if (isActive && error.name !== "AbortError") {
           setRateError(
             "The live exchange rate could not be loaded. Check your connection and try again.",
           );
         }
       } finally {
+        // Loading is complete unless the screen or request has already stopped.
         if (isActive) setIsLoadingRate(false);
       }
     }
 
     fetchExchangeRate();
+    // Remove this screen's active state and cancel the request when it is left.
     return () => {
       isActive = false;
       controller.abort();
     };
   }, [retryCount]);
 
+  // Find the amount of the largest expense in the current month.
   const highest = expenses.reduce(
     (max, expense) => Math.max(max, expense.amount),
     0,
   );
+  // Add all expenses for each category.
   const categoryTotals = categories.map((category) => ({
     name: category.name,
     total: expenses
       .filter((expense) => expense.category === category.id)
       .reduce((sum, expense) => sum + expense.amount, 0),
   }));
+  // The category with the largest total is shown in the top-category card.
   const topCategory = categoryTotals.reduce(
     (top, category) => (category.total > top.total ? category : top),
     categoryTotals[0],
   );
+  // Divide this month's total by the number of days reached so far.
   const average = monthTotal / new Date().getDate();
 
   return (

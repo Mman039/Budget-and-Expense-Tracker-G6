@@ -1,4 +1,4 @@
-// Shows a reminder when the user gets close to or passes a budget limit.
+// Shows a warning when spending is close to or over a budget limit.
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 import {
@@ -9,7 +9,8 @@ import {
 import { formatAmount as money } from "../utils/currency";
 
 /**
- * Displays a caution banner when weekly or monthly spending is near or above budget.</n>
+ * Checks both weekly and monthly budgets.
+ * It does not display a banner if spending is below 80 percent.
  */
 export function BudgetWarning({
   weeklySpent,
@@ -20,7 +21,7 @@ export function BudgetWarning({
   const weeklyOver = weeklyBudget > 0 && weeklySpent >= weeklyBudget;
   const monthlyOver = monthlyBudget > 0 && monthlySpent >= monthlyBudget;
   const weeklyNear = weeklyBudget > 0 && weeklySpent >= weeklyBudget * 0.8;
-  const monthlyNear = monthlyBudget > 0 && monthlySpent >= monthlyBudget * 0.8; //0.8 means 80% of the budget, so if the user has spent 80% or more of their monthly budget, this will be true.
+  const monthlyNear = monthlyBudget > 0 && monthlySpent >= monthlyBudget * 0.8;
 
   if (!weeklyNear && !monthlyNear) return null;
 
@@ -52,7 +53,7 @@ export function BudgetWarning({
         name={
           weeklyOver || monthlyOver
             ? "warning-outline"
-            : "notifications-outline" //if the user is over budget, show a warning icon; if they are near budget, show a notification icon.
+            : "notifications-outline"
         }
         size={22}
         color={weeklyOver || monthlyOver ? colors.warning : colors.orange}

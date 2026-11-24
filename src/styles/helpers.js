@@ -1,5 +1,5 @@
-// Helper functions that build dynamic styles from the base tokens.
-// This keeps styling logic separate from the React component code.
+// These functions add changing values to the app's base styles.
+// Components call these helpers without repeating style rules.
 import { expenseTrackerStyles } from "./core";
 import { expenseTrackerExtraStyles } from "./extras";
 

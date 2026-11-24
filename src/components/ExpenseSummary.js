@@ -1,4 +1,4 @@
-// Large summary card shown at the top of the home dashboard.
+// Shows the large monthly spending total on the home screen.
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 import {

@@ -1,4 +1,4 @@
-// Field set for entering a new expense amount and description.
+// The amount and description fields used when adding an expense.
 import { Text, TextInput, View } from "react-native";
 import { expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";
 

@@ -9,15 +9,19 @@ import {
   useState,
 } from "react";
 
+// This key is used only to name the app's saved data in device storage.
 const storageKey = "centsible.expenseTracker.v1";
+// The app allows up to six quick-add shortcuts.
 const maxQuickAdds = 6;
 
+// These shortcuts are used the first time the app starts.
 const defaultQuickAdds = [
   { id: "coffee", label: "Coffee", amount: "7" },
   { id: "lunch", label: "Lunch", amount: "40" },
   { id: "ride2school", label: "Tricycle Fare", amount: "15" },
 ];
 
+// These values are used when no saved data exists.
 const defaultData = {
   expenses: [],
   weeklyBudget: 250,
@@ -25,8 +29,10 @@ const defaultData = {
   quickAdds: defaultQuickAdds,
 };
 
+// Sharing data through React context lets every screen read and update it.
 const ExpenseContext = createContext(null);
 
+// Check that a saved expense has all fields in the correct format.
 function isExpense(expense) {
   return (
     expense &&
@@ -40,6 +46,7 @@ function isExpense(expense) {
   );
 }
 
+// Convert saved JSON text into a safe app data object.
 function readStoredData(value) {
   const parsed = JSON.parse(value);
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
@@ -74,6 +81,7 @@ function readStoredData(value) {
 }
 
 export function ExpenseProvider({ children }) {
+  // Keep the current app data and storage status together in one provider.
   const [data, setData] = useState(defaultData);
   const [isLoading, setIsLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
@@ -81,6 +89,7 @@ export function ExpenseProvider({ children }) {
   const [storageError, setStorageError] = useState("");
   const storageQueue = useRef(Promise.resolve());
 
+  // Reload saved data when the user asks to try again after a storage error.
   const loadData = useCallback(async () => {
     setIsLoading(true);
     setIsReady(false);

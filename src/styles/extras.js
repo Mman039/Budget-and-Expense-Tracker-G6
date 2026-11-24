@@ -1,4 +1,4 @@
-// Extra styles used for warning components and quick-add editing controls.
+// Styles for warning boxes and quick-add controls.
 import { StyleSheet } from "react-native";
 
 import { colors } from "./tokens";

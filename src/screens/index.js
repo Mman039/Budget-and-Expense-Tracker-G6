@@ -14,9 +14,11 @@ import { HistoryScreen } from "./HistoryScreen";
 import { HomeScreen } from "./HomeScreen";
 import { StatsScreen } from "./StatsScreen";
 
+// Create the two main navigation types used by the app.
 const Stack = createNativeStackNavigator();
 const Tabs = createBottomTabNavigator();
 
+// Names connect the bottom tab icon map to each tab's screen name.
 const tabIcons = {
   Home: "home-outline",
   History: "list-outline",
@@ -25,6 +27,7 @@ const tabIcons = {
 };
 
 function LoadingScreen() {
+  // This page appears while saved data is being read.
   return (
     <ScreenFrame>
       <View style={styles.card}>
@@ -60,6 +63,7 @@ function StorageErrorScreen() {
 }
 
 function MainTabs({ navigation }) {
+  // Read saved expenses and budgets from the shared app context.
   const {
     expenses,
     weeklyBudget,
@@ -68,6 +72,7 @@ function MainTabs({ navigation }) {
     deleteExpense,
     saveBudgets,
   } = useExpenseData();
+  // Refresh the date once a minute so totals stay accurate during the day.
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -75,16 +80,20 @@ function MainTabs({ navigation }) {
     return () => clearInterval(timer);
   }, []);
 
+  // Keep one local date string and use it for all current-day calculations.
   const today = getLocalDate(now);
   const currentMonth = today.slice(0, 7);
   const weekStart = getStartOfWeek(now);
+  // Filter the full expense list into this month and this week.
   const monthExpenses = expenses.filter((expense) =>
     expense.date.startsWith(currentMonth),
   );
   const weekExpenses = expenses.filter(
     (expense) => expense.date >= weekStart && expense.date <= today,
   );
+  // Build the seven dates used by the home chart.
   const chartDays = getLastSevenDays(now);
+  // Add the amounts for each time period.
   const todayTotal = expenses
     .filter((expense) => expense.date === today)
     .reduce((sum, expense) => sum + expense.amount, 0);
@@ -96,6 +105,7 @@ function MainTabs({ navigation }) {
     (sum, expense) => sum + expense.amount,
     0,
   );
+  // Change the greeting based on the time of day.
   const hour = now.getHours();
   const greeting =
     hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
@@ -203,6 +213,7 @@ function MainTabs({ navigation }) {
 }
 
 function AddExpenseRoute({ navigation }) {
+  // Read quick-add shortcuts and expense actions from the shared app context.
   const {
     quickAdds,
     addExpense,
@@ -214,6 +225,7 @@ function AddExpenseRoute({ navigation }) {
     expenses,
     storageError,
   } = useExpenseData();
+  // Expense totals are based on the device's local date.
   const now = new Date();
   const today = getLocalDate(now);
   const weekStart = getStartOfWeek(now);
@@ -225,6 +237,7 @@ function AddExpenseRoute({ navigation }) {
     .reduce((sum, expense) => sum + expense.amount, 0);
 
   const submitExpense = ({ description, amount, category }) => {
+    // Convert and validate the amount before saving.
     const parsedAmount = Number(amount);
     if (
       !description.trim() ||
@@ -238,6 +251,7 @@ function AddExpenseRoute({ navigation }) {
       return false;
     }
 
+    // Check whether the new expense will go past either spending limit.
     const overBudget =
       (weeklyBudget > 0 && weekTotal + parsedAmount > weeklyBudget) ||
       (monthlyBudget > 0 && monthTotal + parsedAmount > monthlyBudget);

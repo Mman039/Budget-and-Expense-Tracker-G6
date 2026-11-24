@@ -1,6 +1,8 @@
 import { SafeAreaView, ScrollView, Text, View } from "react-native";
 import { colors, expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";
 
+// Wraps each screen in a safe, scrollable page.
+// It also shows a small save-error message above the screen content.
 export function ScreenFrame({ children, storageError }) {
   return (
     <SafeAreaView style={styles.safeArea}>

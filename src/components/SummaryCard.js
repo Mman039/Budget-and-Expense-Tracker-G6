@@ -1,4 +1,4 @@
-// Small box used in the home dashboard to show a single metric.
+// Shows one small spending total on the home dashboard.
 import { Text, View } from "react-native";
 import {
   expenseTrackerStyles as styles,

@@ -14,7 +14,9 @@ import {
 } from "../styles/expenseTrackerStyles";
 
 /**
- * Displays current spending totals and a chart of real expense dates.
+ * Shows the main dashboard for the app.
+ * It includes spending totals, budget progress, a seven-day chart,
+ * and a short list of recent expenses.
  */
 export function HomeScreen({
   expenses,
@@ -32,11 +34,13 @@ export function HomeScreen({
   onHistory,
   onStats,
 }) {
+  // Add up the expenses for each date shown in the chart.
   const chartTotals = chartDays.map((date) =>
     expenses
       .filter((expense) => expense.date === date)
       .reduce((sum, expense) => sum + expense.amount, 0),
   );
+  // The biggest chart total sets the height used for the other chart bars.
   const maxChartValue = Math.max(...chartTotals, 1);
 
   return (
@@ -56,6 +60,7 @@ export function HomeScreen({
         caption={`Across ${monthExpenseCount} transactions`}
       />
       <View style={styles.summaryRow}>
+        {/* These cards show totals for today, this week, and this month. */}
         <SummaryCard label="Today" value={todayTotal} color={colors.orange} />
         <SummaryCard label="This week" value={weekTotal} color={colors.blue} />
         <SummaryCard

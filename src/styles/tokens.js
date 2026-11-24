@@ -1,5 +1,4 @@
-// Shared color tokens for the whole app.
-// These values keep the design consistent across screens, cards, and buttons.
+// These shared color names keep the app colors consistent.
 export const colors = {
   navy: "#102A43",
   ink: "#172B4D",

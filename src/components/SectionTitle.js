@@ -1,4 +1,4 @@
-// Small section label component for grouping related content together.
+// Groups screen content under a short section title.
 import { Pressable, Text, View } from "react-native";
 import { expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";
 

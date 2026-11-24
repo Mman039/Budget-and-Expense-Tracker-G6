@@ -1,4 +1,4 @@
-// Reusable page heading used across the app's screens.
+// Draws the same page heading design on every screen.
 import { Text, View } from "react-native";
 import { expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";
 
