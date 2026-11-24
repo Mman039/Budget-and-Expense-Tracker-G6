@@ -1,81 +1,231 @@
-// This file acts as the app's main controller.
-// It keeps shared app data in memory, decides which screen is shown,
-// and connects the screen components to the same state.
-// Because this is a prototype, the data is not saved to storage and resets
-// when the app is reloaded.
-
+import { Ionicons } from "@expo/vector-icons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useState } from "react";
-import { Alert } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, Pressable, Text, View } from "react-native";
 import { ScreenFrame } from "../components/ScreenFrame";
-import { initialExpenses } from "../data/initialExpenses";
+import { ExpenseProvider, useExpenseData } from "../context/ExpenseContext";
+import { colors, expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";
+import { getLocalDate, getLastSevenDays, getStartOfWeek } from "../utils/dates";
 import { AddExpenseScreen } from "./AddExpenseScreen";
 import { BudgetScreen } from "./BudgetScreen";
 import { HistoryScreen } from "./HistoryScreen";
 import { HomeScreen } from "./HomeScreen";
 import { StatsScreen } from "./StatsScreen";
 
-// This date is hardcoded because the prototype uses a fixed sample month.
-// All calculations are based on this value so the dashboard numbers look consistent.
-const today = "2026-09-25";
-const maxQuickAdds = 6;
 const Stack = createNativeStackNavigator();
+const Tabs = createBottomTabNavigator();
 
-// These are the default shortcut entries that appear in the add-expense form.
-const defaultQuickAdds = [
-  { id: "coffee", label: "Coffee", amount: "7" },
-  { id: "lunch", label: "Lunch", amount: "40" },
-  { id: "ride2school", label: "Tricycle Fare", amount: "15" },
-];
+const tabIcons = {
+  Home: "home-outline",
+  History: "list-outline",
+  Budget: "wallet-outline",
+  Stats: "bar-chart-outline",
+};
 
-/**
- * Main app container.
- *
- * This component owns the prototype state for expenses, budgets, and quick-add
- * shortcuts. The screen components receive the data through props, which keeps
- * all pages synced without needing a global store.
- * A Prop is a way to pass data from a parent component to a child component in React.
- */
-export default function Index() {
-  //default means that this is the main component exported from this file, and it can be imported without using curly braces in other files.
-  const [expenses, setExpenses] = useState(initialExpenses);
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("food");
-  const [searchText, setSearchText] = useState("");
-  const [weeklyBudget, setWeeklyBudget] = useState("250");
-  const [monthlyBudget, setMonthlyBudget] = useState("900");
-  const [savedWeeklyBudget, setSavedWeeklyBudget] = useState(250);
-  const [savedMonthlyBudget, setSavedMonthlyBudget] = useState(900);
-  const [quickAdds, setQuickAdds] = useState(defaultQuickAdds);
+function LoadingScreen() {
+  return (
+    <ScreenFrame>
+      <View style={styles.card}>
+        <ActivityIndicator size="large" color={colors.blue} />
+        <Text style={styles.helperText}>Loading your saved expenses…</Text>
+      </View>
+    </ScreenFrame>
+  );
+}
 
-  // These filtered totals are used by the dashboard cards and reminder logic.
-  // They calculate spending for "recent" and "monthly" windows without needing a backend.
+function StorageErrorScreen() {
+  const { loadError, loadData, resetStoredData } = useExpenseData();
+
+  return (
+    <ScreenFrame>
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>Saved data unavailable</Text>
+        <Text style={styles.helperText}>{loadError}</Text>
+        <Pressable style={styles.primaryButton} onPress={loadData}>
+          <Text style={styles.primaryButtonText}>Try again</Text>
+        </Pressable>
+        <Pressable
+          style={[styles.primaryButton, { backgroundColor: colors.warning }]}
+          onPress={resetStoredData}
+        >
+          <Text style={styles.primaryButtonText}>
+            Clear saved data and start fresh
+          </Text>
+        </Pressable>
+      </View>
+    </ScreenFrame>
+  );
+}
+
+function MainTabs({ navigation }) {
+  const {
+    expenses,
+    weeklyBudget,
+    monthlyBudget,
+    storageError,
+    deleteExpense,
+    saveBudgets,
+  } = useExpenseData();
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const today = getLocalDate(now);
+  const currentMonth = today.slice(0, 7);
+  const weekStart = getStartOfWeek(now);
+  const monthExpenses = expenses.filter((expense) =>
+    expense.date.startsWith(currentMonth),
+  );
   const weekExpenses = expenses.filter(
-    (expense) => expense.date >= "2026-09-18",
+    (expense) => expense.date >= weekStart && expense.date <= today,
   );
-  const monthExpenses = expenses.filter(
-    (expense) => expense.date.substring(0, 7) === "2026-09", //0,7 means the first 7 characters of the date string, which is the year and month
-  );
+  const chartDays = getLastSevenDays(now);
   const todayTotal = expenses
     .filter((expense) => expense.date === today)
-    .reduce((sum, expense) => sum + expense.amount, 0); //.reduce is a method that takes an array and reduces it to a single value by applying a function to each element in the array. In this case, it sums up the amounts of all expenses for today.
+    .reduce((sum, expense) => sum + expense.amount, 0);
   const weekTotal = weekExpenses.reduce(
     (sum, expense) => sum + expense.amount,
-    0, //0 is the initial value of the sum, so if there are no expenses for the week, the total will be 0.
+    0,
   );
   const monthTotal = monthExpenses.reduce(
     (sum, expense) => sum + expense.amount,
     0,
   );
+  const hour = now.getHours();
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const dateLabel = now.toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 
-  /**
-   * Validates the entered expense and adds it to the in-memory list.
-   * Returns true when the save succeeds so the caller can navigate away.
-   */
-  const addExpense = () => {
-    const parsedAmount = Number.parseFloat(amount);
+  const openAddExpense = () => navigation.navigate("Add");
+
+  return (
+    <Tabs.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarActiveTintColor: colors.navy,
+        tabBarInactiveTintColor: colors.muted,
+        tabBarStyle: {
+          backgroundColor: colors.white,
+          borderTopColor: colors.border,
+          height: 64,
+          paddingBottom: 8,
+          paddingTop: 6,
+        },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: "700" },
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name={tabIcons[route.name]} size={size} color={color} />
+        ),
+      })}
+    >
+      <Tabs.Screen name="Home">
+        {({ navigation: tabNavigation }) => (
+          <ScreenFrame storageError={storageError}>
+            <HomeScreen
+              expenses={expenses}
+              monthExpenseCount={monthExpenses.length}
+              today={today}
+              dateLabel={dateLabel}
+              greeting={greeting}
+              chartDays={chartDays}
+              todayTotal={todayTotal}
+              weekTotal={weekTotal}
+              monthTotal={monthTotal}
+              savedWeeklyBudget={weeklyBudget}
+              savedMonthlyBudget={monthlyBudget}
+              onAdd={openAddExpense}
+              onHistory={() => tabNavigation.navigate("History")}
+              onStats={() => tabNavigation.navigate("Stats")}
+            />
+          </ScreenFrame>
+        )}
+      </Tabs.Screen>
+      <Tabs.Screen name="History">
+        {() => (
+          <ScreenFrame storageError={storageError}>
+            <HistoryScreen
+              expenses={expenses}
+              today={today}
+              onDelete={deleteExpense}
+            />
+          </ScreenFrame>
+        )}
+      </Tabs.Screen>
+      <Tabs.Screen name="Budget">
+        {() => (
+          <ScreenFrame storageError={storageError}>
+            <BudgetScreen
+              key={`${weeklyBudget}:${monthlyBudget}`}
+              weeklyBudget={weeklyBudget}
+              monthlyBudget={monthlyBudget}
+              weekTotal={weekTotal}
+              monthTotal={monthTotal}
+              onSave={(weeklyInput, monthlyInput) => {
+                const nextWeeklyBudget = Number(weeklyInput);
+                const nextMonthlyBudget = Number(monthlyInput);
+                if (
+                  !Number.isFinite(nextWeeklyBudget) ||
+                  nextWeeklyBudget < 0 ||
+                  !Number.isFinite(nextMonthlyBudget) ||
+                  nextMonthlyBudget < 0
+                ) {
+                  Alert.alert(
+                    "Invalid budget",
+                    "Enter zero or a positive amount for each budget.",
+                  );
+                  return;
+                }
+                saveBudgets(nextWeeklyBudget, nextMonthlyBudget);
+                Alert.alert("Budget saved", "Your spending limits are active.");
+              }}
+            />
+          </ScreenFrame>
+        )}
+      </Tabs.Screen>
+      <Tabs.Screen name="Stats">
+        {() => (
+          <ScreenFrame storageError={storageError}>
+            <StatsScreen expenses={monthExpenses} monthTotal={monthTotal} />
+          </ScreenFrame>
+        )}
+      </Tabs.Screen>
+    </Tabs.Navigator>
+  );
+}
+
+function AddExpenseRoute({ navigation }) {
+  const {
+    quickAdds,
+    addExpense,
+    updateQuickAdd,
+    addQuickAdd,
+    removeQuickAdd,
+    weeklyBudget,
+    monthlyBudget,
+    expenses,
+    storageError,
+  } = useExpenseData();
+  const now = new Date();
+  const today = getLocalDate(now);
+  const weekStart = getStartOfWeek(now);
+  const weekTotal = expenses
+    .filter((expense) => expense.date >= weekStart && expense.date <= today)
+    .reduce((sum, expense) => sum + expense.amount, 0);
+  const monthTotal = expenses
+    .filter((expense) => expense.date.startsWith(today.slice(0, 7)))
+    .reduce((sum, expense) => sum + expense.amount, 0);
+
+  const submitExpense = ({ description, amount, category }) => {
+    const parsedAmount = Number(amount);
     if (
       !description.trim() ||
       !Number.isFinite(parsedAmount) ||
@@ -87,186 +237,63 @@ export default function Index() {
       );
       return false;
     }
-    //this checks if the description is empty or only whitespace, if the amount is not a valid number, or if the amount is less than or equal to zero. If any of these conditions are true, it shows an alert and returns false to indicate that the expense was not added.
 
-    const nextWeekTotal = weekTotal + parsedAmount;
-    const nextMonthTotal = monthTotal + parsedAmount;
-    if (
-      (savedWeeklyBudget > 0 && nextWeekTotal > savedWeeklyBudget) ||
-      (savedMonthlyBudget > 0 && nextMonthTotal > savedMonthlyBudget)
-    ) {
-      Alert.alert(
-        "Budget reminder",
-        "This expense will put you over one of your budget limits.",
-      );
-    } //this checks if the new expense will cause the user to exceed their weekly or monthly budget. If so, it shows a reminder alert but still allows the expense to be added.
+    const overBudget =
+      (weeklyBudget > 0 && weekTotal + parsedAmount > weeklyBudget) ||
+      (monthlyBudget > 0 && monthTotal + parsedAmount > monthlyBudget);
 
-    setExpenses((currentExpenses) => [
-      {
-        id: String(Date.now()),
-        amount: parsedAmount,
-        description: description.trim(),
-        category: selectedCategory,
-        date: today,
-      },
-      ...currentExpenses, //...currentExpenses means that the new expense is added to the beginning of the array, so the most recent expenses appear first in the list.
-    ]);
-    setDescription("");
-    setAmount("");
-    return true;
-  }; //this adds the new expense to the beginning of the expenses array, resets the description and amount fields, and returns true to indicate that the expense was successfully added.
-
-  // Removes a single expense from the current list by matching its unique id.
-  const deleteExpense = (id) =>
-    setExpenses((currentExpenses) =>
-      currentExpenses.filter((expense) => expense.id !== id),
-    );
-
-  // Prefills the expense form from a fast shortcut. This keeps repeated entries quick.
-  const quickAdd = (quickAmount, quickDescription) => {
-    setAmount(String(quickAmount));
-    setDescription(quickDescription);
-  };
-
-  // Updates a single field inside one quick-add item without mutating the rest.
-  const updateQuickAdd = (id, field, value) => {
-    setQuickAdds((currentQuickAdds) =>
-      currentQuickAdds.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item,
-      ),
-    );
-  };
-
-  // Adds another reusable shortcut row, but never past the prototype limit.
-  const addQuickAdd = () => {
-    setQuickAdds((currentQuickAdds) => {
-      if (currentQuickAdds.length >= maxQuickAdds) return currentQuickAdds;
-      return [
-        ...currentQuickAdds,
-        {
-          id: `quick-add-${Date.now()}`,
-          label: "",
-          amount: "",
-        },
-      ];
+    addExpense({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      amount: parsedAmount,
+      description: description.trim(),
+      category,
+      date: today,
     });
-  };
 
-  // Deletes one shortcut from the quick-add list by id.
-  const removeQuickAdd = (id) => {
-    setQuickAdds((currentQuickAdds) =>
-      currentQuickAdds.filter((item) => item.id !== id),
-    );
-  };
-
-  // Saves the edited budget limits into the values used by the warning and progress UI.
-  const saveBudgets = () => {
-    const nextWeeklyBudget = Number(weeklyBudget) || 0;
-    const nextMonthlyBudget = Number(monthlyBudget) || 0;
-    setSavedWeeklyBudget(nextWeeklyBudget);
-    setSavedMonthlyBudget(nextMonthlyBudget); //nextWeeklyBudget and nextMonthlyBudget are the new budget values that the user has entered. If the user enters a non-numeric value, it will default to 0. The savedWeeklyBudget and savedMonthlyBudget state variables are updated with these new values.
-
-    if (
-      (nextWeeklyBudget > 0 && weekTotal > nextWeeklyBudget) ||
-      (nextMonthlyBudget > 0 && monthTotal > nextMonthlyBudget)
-    ) {
+    if (overBudget) {
       Alert.alert(
         "Budget reminder",
-        "Your current spending is already over one of the new limits.",
+        "This expense puts you over one of your spending limits.",
       );
-    } else {
-      Alert.alert("Budget saved", "Your new limits are active.");
     }
+    navigation.goBack();
+    return true;
   };
 
   return (
+    <ScreenFrame storageError={storageError}>
+      <AddExpenseScreen
+        quickAdds={quickAdds}
+        onEditQuickAdd={updateQuickAdd}
+        onAddQuickAdd={addQuickAdd}
+        onRemoveQuickAdd={removeQuickAdd}
+        onSubmit={submitExpense}
+        onCancel={() => navigation.goBack()}
+      />
+    </ScreenFrame>
+  );
+}
+
+function AppNavigation() {
+  const { isLoading, loadError } = useExpenseData();
+
+  if (isLoading) return <LoadingScreen />;
+  if (loadError) return <StorageErrorScreen />;
+
+  return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{ headerShown: false }}
-      >
-        <Stack.Screen name="Home">
-          {({ navigation }) => (
-            <ScreenFrame navigation={navigation} activeScreen="Home">
-              <HomeScreen
-                expenses={expenses}
-                today={today}
-                todayTotal={todayTotal}
-                weekTotal={weekTotal}
-                monthTotal={monthTotal}
-                savedWeeklyBudget={savedWeeklyBudget}
-                savedMonthlyBudget={savedMonthlyBudget}
-                onAdd={() => navigation.navigate("Add")}
-                onHistory={() => navigation.navigate("History")}
-                onStats={() => navigation.navigate("Stats")}
-              />
-            </ScreenFrame>
-          )}
-        </Stack.Screen>
-
-        <Stack.Screen name="Add">
-          {({ navigation }) => (
-            <ScreenFrame navigation={navigation} activeScreen="Add">
-              <AddExpenseScreen
-                description={description}
-                amount={amount}
-                selectedCategory={selectedCategory}
-                setDescription={setDescription}
-                setAmount={setAmount}
-                setSelectedCategory={setSelectedCategory}
-                quickAdds={quickAdds}
-                onQuickAdd={quickAdd}
-                onEditQuickAdd={updateQuickAdd}
-                onAddQuickAdd={addQuickAdd}
-                onRemoveQuickAdd={removeQuickAdd}
-                onSubmit={() => {
-                  if (addExpense()) navigation.navigate("Home");
-                }}
-              />
-            </ScreenFrame>
-          )}
-        </Stack.Screen>
-
-        <Stack.Screen name="History">
-          {({ navigation }) => (
-            <ScreenFrame navigation={navigation} activeScreen="History">
-              <HistoryScreen
-                expenses={expenses}
-                today={today}
-                searchText={searchText}
-                setSearchText={setSearchText}
-                onDelete={deleteExpense}
-              />
-            </ScreenFrame>
-          )}
-        </Stack.Screen>
-
-        <Stack.Screen name="Budget">
-          {({ navigation }) => (
-            <ScreenFrame navigation={navigation} activeScreen="Budget">
-              <BudgetScreen
-                weeklyBudget={weeklyBudget}
-                monthlyBudget={monthlyBudget}
-                setWeeklyBudget={setWeeklyBudget}
-                setMonthlyBudget={setMonthlyBudget}
-                savedWeeklyBudget={savedWeeklyBudget}
-                savedMonthlyBudget={savedMonthlyBudget}
-                weekTotal={weekTotal}
-                monthTotal={monthTotal}
-                onSave={saveBudgets}
-              />
-            </ScreenFrame>
-          )}
-        </Stack.Screen>
-
-        <Stack.Screen name="Stats">
-          {({ navigation }) => (
-            <ScreenFrame navigation={navigation} activeScreen="Stats">
-              <StatsScreen expenses={expenses} monthTotal={monthTotal} />
-            </ScreenFrame>
-          )}
-        </Stack.Screen>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="MainTabs" component={MainTabs} />
+        <Stack.Screen name="Add" component={AddExpenseRoute} />
       </Stack.Navigator>
     </NavigationContainer>
+  );
+}
+
+export default function Index() {
+  return (
+    <ExpenseProvider>
+      <AppNavigation />
+    </ExpenseProvider>
   );
 }

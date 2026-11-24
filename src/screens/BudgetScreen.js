@@ -1,36 +1,37 @@
-// This screen lets the user set and review spending limits.
+import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { BudgetProgress } from "../components/BudgetProgress";
 import { BudgetWarning } from "../components/BudgetWarning";
 import { Header } from "../components/Header";
 import { SectionTitle } from "../components/SectionTitle";
-import { colors, expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";
+import {
+  colors,
+  expenseTrackerStyles as styles,
+} from "../styles/expenseTrackerStyles";
 import { formatAmount as money } from "../utils/currency";
 
 /**
  * Displays editable weekly and monthly maximum values.
- * The UI does not save to disk yet, but it does update the in-memory warnings.
  */
 export function BudgetScreen({
   weeklyBudget,
   monthlyBudget,
-  setWeeklyBudget,
-  setMonthlyBudget,
-  savedWeeklyBudget,
-  savedMonthlyBudget,
   weekTotal,
   monthTotal,
   onSave,
 }) {
+  const [weeklyInput, setWeeklyInput] = useState(String(weeklyBudget));
+  const [monthlyInput, setMonthlyInput] = useState(String(monthlyBudget));
+
   return (
     <>
       <Header eyebrow="PLAN AHEAD" title="Budget settings" />
       <BudgetWarning
         weeklySpent={weekTotal}
         monthlySpent={monthTotal}
-        weeklyBudget={savedWeeklyBudget}
-        monthlyBudget={savedMonthlyBudget}
+        weeklyBudget={weeklyBudget}
+        monthlyBudget={monthlyBudget}
       />
       <Text style={styles.helperText}>
         Set limits that feel realistic for your everyday spending.
@@ -40,8 +41,8 @@ export function BudgetScreen({
         <View style={styles.amountBox}>
           <Text style={styles.currency}>₱</Text>
           <TextInput
-            value={weeklyBudget}
-            onChangeText={setWeeklyBudget}
+            value={weeklyInput}
+            onChangeText={setWeeklyInput}
             keyboardType="decimal-pad"
             style={styles.budgetInput}
           />
@@ -50,13 +51,16 @@ export function BudgetScreen({
         <View style={styles.amountBox}>
           <Text style={styles.currency}>₱</Text>
           <TextInput
-            value={monthlyBudget}
-            onChangeText={setMonthlyBudget}
+            value={monthlyInput}
+            onChangeText={setMonthlyInput}
             keyboardType="decimal-pad"
             style={styles.budgetInput}
           />
         </View>
-        <Pressable style={styles.primaryButton} onPress={onSave}>
+        <Pressable
+          style={styles.primaryButton}
+          onPress={() => onSave(weeklyInput, monthlyInput)}
+        >
           <Ionicons name="save-outline" size={20} color={colors.white} />
           <Text style={styles.primaryButtonText}>Save budgets</Text>
         </Pressable>
@@ -64,20 +68,24 @@ export function BudgetScreen({
       <SectionTitle title="Current limits" />
       <View style={styles.card}>
         <BudgetProgress
-          label="Weekly remaining"
-          spent={Math.max(savedWeeklyBudget - weekTotal, 0)}
-          budget={savedWeeklyBudget}
+          label="Weekly spending"
+          spent={weekTotal}
+          budget={weeklyBudget}
         />
         <Text style={styles.remainingText}>
-          {money(Math.max(savedWeeklyBudget - weekTotal, 0))} left this week
+          {weeklyBudget > 0
+            ? `${money(Math.max(weeklyBudget - weekTotal, 0))} left this week`
+            : "No weekly limit set"}
         </Text>
         <BudgetProgress
-          label="Monthly remaining"
-          spent={Math.max(savedMonthlyBudget - monthTotal, 0)}
-          budget={savedMonthlyBudget}
+          label="Monthly spending"
+          spent={monthTotal}
+          budget={monthlyBudget}
         />
         <Text style={styles.remainingText}>
-          {money(Math.max(savedMonthlyBudget - monthTotal, 0))} left this month
+          {monthlyBudget > 0
+            ? `${money(Math.max(monthlyBudget - monthTotal, 0))} left this month`
+            : "No monthly limit set"}
         </Text>
       </View>
     </>

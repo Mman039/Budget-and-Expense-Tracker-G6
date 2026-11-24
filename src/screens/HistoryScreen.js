@@ -1,16 +1,16 @@
-// This screen handles browsing and filtering the expense log.
+import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { TextInput, View } from "react-native";
+import { Alert, TextInput, View } from "react-native";
 import { ExpenseList } from "../components/ExpenseList";
 import { Header } from "../components/Header";
 import { getCategory } from "../data/categories";
 import { colors, expenseTrackerStyles as styles } from "../styles/expenseTrackerStyles";
 
 /**
- * Filters the transactions list by description or category name.
- * The comparison is case-insensitive so the search feels natural.
+ * Filters transactions and asks before deleting an expense.
  */
-export function HistoryScreen({ expenses, today, searchText, setSearchText, onDelete }) {
+export function HistoryScreen({ expenses, today, onDelete }) {
+  const [searchText, setSearchText] = useState("");
   const filteredExpenses = expenses.filter(
     (expense) =>
       expense.description.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -18,6 +18,17 @@ export function HistoryScreen({ expenses, today, searchText, setSearchText, onDe
         .name.toLowerCase()
         .includes(searchText.toLowerCase()),
   );
+
+  const confirmDelete = (expenseId) => {
+    Alert.alert("Delete expense?", "This transaction will be removed.", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => onDelete(expenseId),
+      },
+    ]);
+  };
 
   return (
     <>
@@ -39,7 +50,7 @@ export function HistoryScreen({ expenses, today, searchText, setSearchText, onDe
         today={today}
         emptyTitle="No transactions found"
         emptyMessage="Try a different search."
-        onDelete={onDelete}
+        onDelete={confirmDelete}
       />
     </>
   );

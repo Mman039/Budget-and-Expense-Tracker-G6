@@ -1,5 +1,3 @@
-// This screen is the main dashboard for the prototype app.
-// It summarizes today's, week's, and month's spending and shows a chart plus recent entries.
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 import { BudgetProgress } from "../components/BudgetProgress";
@@ -16,12 +14,15 @@ import {
 } from "../styles/expenseTrackerStyles";
 
 /**
- * Displays the dashboard summary and the main spending chart.
- * The 7-day chart is calculated from sample expense dates in the current prototype month.
+ * Displays current spending totals and a chart of real expense dates.
  */
 export function HomeScreen({
   expenses,
+  monthExpenseCount,
   today,
+  dateLabel,
+  greeting,
+  chartDays,
   todayTotal,
   weekTotal,
   monthTotal,
@@ -31,19 +32,18 @@ export function HomeScreen({
   onHistory,
   onStats,
 }) {
-  const chartDays = ["18", "19", "20", "21", "22", "23", "24"];
-  const chartTotals = chartDays.map((day) =>
+  const chartTotals = chartDays.map((date) =>
     expenses
-      .filter((expense) => expense.date === `2026-09-${day}`)
+      .filter((expense) => expense.date === date)
       .reduce((sum, expense) => sum + expense.amount, 0),
-  ); // Calculate the total spending for each of the last 7 days by filtering expenses by date and summing their amounts.
-  const maxChartValue = Math.max(...chartTotals, 1); // Find the maximum spending value from the last 7 days to scale the chart bars, ensuring a minimum of 1 to avoid division by zero.
+  );
+  const maxChartValue = Math.max(...chartTotals, 1);
 
   return (
     <>
       <Header
-        eyebrow="THURSDAY, SEPTEMBER 24"
-        title="Good morning"
+        eyebrow={dateLabel}
+        title={greeting}
         action={
           <Pressable style={styles.headerIcon} onPress={onAdd}>
             <Ionicons name="add" size={24} color={colors.white} />
@@ -58,7 +58,7 @@ export function HomeScreen({
       />
       <ExpenseSummary
         total={monthTotal}
-        caption={`Across ${expenses.length} transactions`}
+        caption={`Across ${monthExpenseCount} transactions`}
       />
       <View style={styles.summaryRow}>
         <SummaryCard label="Today" value={todayTotal} color={colors.orange} />
@@ -96,7 +96,9 @@ export function HomeScreen({
                   Math.max(6, (total / maxChartValue) * 92),
                 )}
               />
-              <Text style={styles.barLabel}>{chartDays[index]}</Text>
+              <Text style={styles.barLabel}>
+                {chartDays[index].slice(8, 10)}
+              </Text>
             </View>
           ))}
         </View>

@@ -1,5 +1,4 @@
-// This screen is the entry point for creating a new expense.
-// It includes the amount form, category picker, and shortcut buttons for repeated spending.
+import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { ExpenseForm } from "../components/ExpenseForm";
@@ -17,26 +16,47 @@ import {
 const maxQuickAdds = 6;
 
 /**
- * Lets the user choose a category, type an amount, and save a new expense.
- * The quick-add section stores reusable common purchase entries.
+ * Lets the user enter an expense and manage reusable quick-add shortcuts.
  */
 export function AddExpenseScreen({
-  description,
-  amount,
-  selectedCategory,
-  setDescription,
-  setAmount,
-  setSelectedCategory,
   quickAdds,
-  onQuickAdd,
   onEditQuickAdd,
   onAddQuickAdd,
   onRemoveQuickAdd,
   onSubmit,
+  onCancel,
 }) {
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("food");
+
+  const submitExpense = () => {
+    if (onSubmit({ description, amount, category: selectedCategory })) {
+      setDescription("");
+      setAmount("");
+    }
+  };
+
+  const applyQuickAdd = (quickAdd) => {
+    setAmount(quickAdd.amount);
+    setDescription(quickAdd.label);
+  };
+
   return (
     <>
-      <Header eyebrow="NEW TRANSACTION" title="Add expense" />
+      <Header
+        eyebrow="NEW TRANSACTION"
+        title="Add expense"
+        action={
+          <Pressable
+            onPress={onCancel}
+            accessibilityRole="button"
+            accessibilityLabel="Close add expense"
+          >
+            <Ionicons name="close" size={24} color={colors.navy} />
+          </Pressable>
+        }
+      />
       <Text style={styles.helperText}>
         Money-tor your money with a tracker.
       </Text>
@@ -45,7 +65,7 @@ export function AddExpenseScreen({
         amount={amount}
         setDescription={setDescription}
         setAmount={setAmount}
-        onSubmit={onSubmit}
+        onSubmit={submitExpense}
       />
       <SectionTitle title="Category" />
       <View style={styles.categoryGrid}>
@@ -107,9 +127,7 @@ export function AddExpenseScreen({
               />
               <Pressable
                 style={extraStyles.quickUseButton}
-                onPress={() =>
-                  onQuickAdd(Number(quickAdd.amount) || 0, quickAdd.label)
-                }
+                onPress={() => applyQuickAdd(quickAdd)}
               >
                 <Text style={extraStyles.quickUseText}>Use</Text>
               </Pressable>
@@ -127,7 +145,7 @@ export function AddExpenseScreen({
           <Text style={extraStyles.addQuickButtonText}>Add quick add</Text>
         </Pressable>
       )}
-      <Pressable style={styles.primaryButton} onPress={onSubmit}>
+      <Pressable style={styles.primaryButton} onPress={submitExpense}>
         <Ionicons
           name="checkmark-circle-outline"
           size={21}
